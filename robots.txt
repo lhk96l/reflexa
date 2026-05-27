@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lhk96l.github.io/reflexa/sitemap.xml

@@ -13,16 +13,16 @@
   "categories": ["productivity", "utilities", "developer-tools"],
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300D4FF'/%3E%3Cstop offset='100%25' stop-color='%238B5CF6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='url(%23g)'/%3E%3Ctext x='256' y='340' font-size='280' font-family='Arial Black,sans-serif' font-weight='900' fill='white' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300D4FF'/%3E%3Cstop offset='100%25' stop-color='%238B5CF6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='192' height='192' rx='42' fill='url(%23g)'/%3E%3Ctext x='96' y='130' font-size='108' font-family='Arial Black,sans-serif' font-weight='900' fill='white' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E",
+      "src": "icons/icon-192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "shortcuts": [
@@ -31,18 +31,7 @@
       "short_name": "Test Now",
       "description": "Start a network speed test instantly",
       "url": "/reflexa/?action=test",
-      "icons": [
-        {
-          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='48' fill='%2300D4FF'/%3E%3Ctext x='48' y='65' font-size='52' text-anchor='middle' fill='white'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
-  "screenshots": [
-    {
-      "label": "REFLEXA Speed Test Dashboard",
-      "form_factor": "narrow"
+      "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
     }
   ],
   "related_applications": [],
