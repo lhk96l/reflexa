@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+*.min.js
+*.min.css
+
+# Logs
+logs/
+*.log
+
+# Temp
+.tmp/
+temp/
