@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F1E"/>
+      <stop offset="100%" stop-color="#1A0B35"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Grid lines subtle -->
+  <g opacity="0.04" stroke="#00D4FF" stroke-width="1">
+    <line x1="0" y1="105" x2="1200" y2="105"/>
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="0" y1="525" x2="1200" y2="525"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Glow circle background -->
+  <circle cx="820" cy="315" r="260" fill="#00D4FF" opacity="0.04"/>
+  <circle cx="820" cy="315" r="200" fill="#8B5CF6" opacity="0.04"/>
+
+  <!-- GAUGE (right side) -->
+  <g transform="translate(820,315)">
+    <!-- Track -->
+    <circle cx="0" cy="0" r="180" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="20" stroke-linecap="round" transform="rotate(-90)"/>
+    <!-- Fill ~75% -->
+    <circle cx="0" cy="0" r="180" fill="none" stroke="url(#gaugeGrad)" stroke-width="20" stroke-linecap="round"
+            stroke-dasharray="1131" stroke-dashoffset="283" transform="rotate(-90)" filter="url(#glow)" opacity="0.9"/>
+    <!-- Center value -->
+    <text x="0" y="-20" font-family="Arial Black,sans-serif" font-weight="900" font-size="72"
+          fill="white" text-anchor="middle">94.7</text>
+    <text x="0" y="18" font-family="Arial,sans-serif" font-size="22" fill="#94A3B8" text-anchor="middle">Mbps</text>
+    <text x="0" y="52" font-family="Arial,sans-serif" font-size="14" fill="#00D4FF" text-anchor="middle" font-weight="700" letter-spacing="3">DOWNLOAD</text>
+  </g>
+
+  <!-- Left content -->
+  <!-- Logo mark -->
+  <rect x="60" y="60" width="64" height="64" rx="16" fill="url(#accent)"/>
+  <text x="92" y="108" font-family="Arial Black,sans-serif" font-weight="900" font-size="42" fill="white" text-anchor="middle">R</text>
+
+  <!-- REFLEXA name -->
+  <text x="140" y="80" font-family="Arial Black,sans-serif" font-weight="900" font-size="42" fill="url(#accent)">REFLEXA</text>
+  <text x="140" y="106" font-family="Arial,sans-serif" font-size="16" fill="#64748B" letter-spacing="3">NETWORK DIAGNOSTICS</text>
+
+  <!-- Headline -->
+  <text x="60" y="210" font-family="Arial Black,sans-serif" font-weight="900" font-size="58" fill="white">Your Network's</text>
+  <text x="60" y="278" font-family="Arial Black,sans-serif" font-weight="900" font-size="58" fill="url(#accent)">Instant Reflection</text>
+
+  <!-- Description -->
+  <text x="60" y="340" font-family="Arial,sans-serif" font-size="22" fill="#94A3B8">Real-time speed testing · Ping · Jitter</text>
+  <text x="60" y="372" font-family="Arial,sans-serif" font-size="22" fill="#94A3B8">Analytics · Arabic &amp; English · 100% Free</text>
+
+  <!-- Stats pills -->
+  <!-- Download pill -->
+  <rect x="60" y="420" width="180" height="52" rx="26" fill="rgba(0,212,255,0.1)" stroke="#00D4FF" stroke-width="1.5"/>
+  <text x="150" y="440" font-family="Arial,sans-serif" font-size="11" fill="#00D4FF" text-anchor="middle" letter-spacing="1">DOWNLOAD</text>
+  <text x="150" y="461" font-family="Arial Black,sans-serif" font-weight="900" font-size="16" fill="white" text-anchor="middle">94.7 Mbps</text>
+
+  <!-- Upload pill -->
+  <rect x="256" y="420" width="180" height="52" rx="26" fill="rgba(139,92,246,0.1)" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="346" y="440" font-family="Arial,sans-serif" font-size="11" fill="#8B5CF6" text-anchor="middle" letter-spacing="1">UPLOAD</text>
+  <text x="346" y="461" font-family="Arial Black,sans-serif" font-weight="900" font-size="16" fill="white" text-anchor="middle">48.3 Mbps</text>
+
+  <!-- Ping pill -->
+  <rect x="452" y="420" width="180" height="52" rx="26" fill="rgba(16,185,129,0.1)" stroke="#10B981" stroke-width="1.5"/>
+  <text x="542" y="440" font-family="Arial,sans-serif" font-size="11" fill="#10B981" text-anchor="middle" letter-spacing="1">PING</text>
+  <text x="542" y="461" font-family="Arial Black,sans-serif" font-weight="900" font-size="16" fill="white" text-anchor="middle">12 ms</text>
+
+  <!-- URL -->
+  <text x="60" y="570" font-family="Arial,sans-serif" font-size="18" fill="#4B5563">lhk96l.github.io/reflexa</text>
+
+  <!-- Free badge -->
+  <rect x="880" y="555" width="140" height="36" rx="18" fill="url(#accent)" opacity="0.9"/>
+  <text x="950" y="578" font-family="Arial Black,sans-serif" font-weight="900" font-size="15" fill="white" text-anchor="middle" letter-spacing="1">100% FREE</text>
+
+  <!-- PWA badge -->
+  <rect x="1032" y="555" width="108" height="36" rx="18" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <text x="1086" y="578" font-family="Arial,sans-serif" font-size="14" fill="#94A3B8" text-anchor="middle">📱 PWA</text>
+</svg>
