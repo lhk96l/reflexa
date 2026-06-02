@@ -11,7 +11,7 @@ const BYPASS = [
   'icanhazip.com', 'cloudflare-dns.com', 'dns.google',
   'dns.quad9.net', 'dns.nextdns.io', 'dns.adguard-dns.com',
   'doh.opendns.com', 'stun.l.google.com', 'stun.cloudflare.com',
-  'reflexa-license.hanodeking15.workers.dev',
+  'workers.dev',
   'lemonsqueezy.com', 'resend.com',
 ];
 

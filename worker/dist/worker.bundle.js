@@ -213,6 +213,13 @@ async function handleValidate(request, env) {
   const key = (body.key || '').trim().toUpperCase();
   if (!key) return json({ valid: false, reason: 'No key' }, 400);
 
+  // Rate limiting — 10 طلبات / دقيقة لكل IP
+  const ip    = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rlKey = `ratelimit:validate:${ip}`;
+  const rl    = parseInt(await env.LICENSES.get(rlKey) || '0');
+  if (rl >= 10) return json({ valid: false, reason: 'Too many requests. Try again later.' }, 429);
+  await env.LICENSES.put(rlKey, String(rl + 1), { expirationTtl: 60 });
+
   const result = await verifyKey(key, env.RXFLX_SECRET);
   if (!result.valid) return json(result);
 

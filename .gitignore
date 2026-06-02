@@ -14,10 +14,11 @@ yarn-error.log
 .DS_Store
 Thumbs.db
 
-# Build intermediates (keep dist/ for GitHub Pages deployment)
+# Build intermediates
 dist/reflexa.bundle.js
 node_modules/
 worker/node_modules/
+generate-key.ps1
 
 # Secrets — never commit
 .env
