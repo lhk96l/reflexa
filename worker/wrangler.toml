@@ -1,0 +1,29 @@
+name            = "reflexa-license"
+main            = "src/index.js"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ── KV Namespace ──────────────────────────────────────────────────
+# Create with: npx wrangler kv:namespace create LICENSES
+# Then replace the id below
+[[kv_namespaces]]
+binding  = "LICENSES"
+id       = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_YOUR_PREVIEW_KV_ID"
+
+# ── Routes ────────────────────────────────────────────────────────
+# Uncomment after deploying a custom domain
+# [[routes]]
+# pattern = "api.reflexa.io/*"
+# zone_name = "reflexa.io"
+
+# ── Environment Variables ─────────────────────────────────────────
+# Set secrets with: npx wrangler secret put RXFLX_SECRET
+# DO NOT put secrets in this file — use wrangler secret put
+[vars]
+ENVIRONMENT = "production"
+
+# ── Development ───────────────────────────────────────────────────
+[dev]
+port = 8787
+local_protocol = "http"

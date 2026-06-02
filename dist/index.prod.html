@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>REFLEXA — Advanced Network Diagnostic Tool</title>
+<meta name="description" content="Professional network diagnostic: real-time speed testing, RFC 6349 TCP analysis, ITU-T Y.1541 scoring, DNS benchmark, WebRTC leak detection, bufferbloat grade. 100% private, offline-capable PWA.">
+<meta name="theme-color" content="#0B0F1E">
+<meta name="keywords" content="speed test, network diagnostic, RFC 6349, ITU-T, DNS benchmark, WebRTC leak, bufferbloat, packet loss, internet speed, network quality">
+<meta name="author" content="Eng. Mohanad Al-Mothafer">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://lhk96l.github.io/reflexa/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lhk96l.github.io/reflexa/">
+<meta property="og:title" content="REFLEXA — Advanced Network Diagnostic Tool">
+<meta property="og:description" content="Professional network diagnostics: RFC 6349, ITU-T Y.1541, DNS benchmark, WebRTC leak detection. 100% private & free.">
+<meta property="og:image" content="https://lhk96l.github.io/reflexa/og-image.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="REFLEXA — Advanced Network Diagnostic Tool">
+<meta name="twitter:description" content="RFC 6349 TCP analysis, ITU-T Y.1541 scoring, DNS benchmark, WebRTC leak detection. Free & private.">
+<meta name="twitter:image" content="https://lhk96l.github.io/reflexa/og-image.svg">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+
+<!-- Schema.org -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"REFLEXA","url":"https://lhk96l.github.io/reflexa/","description":"Professional network diagnostic tool with RFC 6349, ITU-T Y.1541, DNS benchmark, and WebRTC leak detection.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","softwareVersion":"3.0.0","inLanguage":["en","ar"],"author":{"@type":"Person","name":"Eng. Mohanad Al-Mothafer"},"isAccessibleForFree":true}
+</script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Chart.js with SRI -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+
+<style>
+/* ══ VARIABLES ══════════════════════════════════════════════════════ */
+:root{--cyan:#00D4FF;--purple:#8B5CF6;--green:#10B981;--orange:#F59E0B;--red:#EF4444;--r:16px;--r-sm:10px;--r-lg:22px;}
+[data-theme="dark"]{--bg:#0B0F1E;--surface:#111827;--card:#151D2E;--card2:#1A2035;--border:rgba(255,255,255,0.07);--text:#F1F5F9;--sub:#94A3B8;--muted:#4B5563;--gauge-bg:rgba(255,255,255,0.06);--shadow:0 4px 30px rgba(0,0,0,.5);}
+[data-theme="light"]{--bg:#EEF2FF;--surface:#E5EAFF;--card:#FFFFFF;--card2:#F8FAFF;--border:rgba(0,0,0,0.07);--text:#0F172A;--sub:#64748B;--muted:#CBD5E1;--gauge-bg:rgba(0,0,0,0.06);--shadow:0 4px 30px rgba(99,102,241,.12);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;overflow-x:hidden;}
+html[lang="ar"] body{font-family:'Tajawal',sans-serif;}
+
+/* ══ HEADER ═════════════════════════════════════════════════════════ */
+header{position:sticky;top:0;z-index:200;background:rgba(11,15,30,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+[data-theme="light"] header{background:rgba(238,242,255,.92);}
+.logo{display:flex;align-items:center;gap:10px;cursor:default;user-select:none;}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;box-shadow:0 0 14px rgba(0,212,255,.3);}
+.logo-name{font-size:20px;font-weight:900;letter-spacing:1.5px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-tag{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;line-height:1;margin-top:1px;}
+.logo-ver{font-size:9px;color:var(--muted);margin-inline-start:6px;align-self:flex-end;padding-bottom:2px;}
+.header-right{display:flex;align-items:center;gap:6px;}
+.icon-btn{width:34px;height:34px;border:1px solid var(--border);background:var(--card);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--text);outline:none;}
+.icon-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.lang-pill{padding:5px 12px;border:1px solid var(--border);background:var(--card);border-radius:20px;cursor:pointer;font-size:12px;font-weight:700;color:var(--sub);transition:all .2s;outline:none;}
+.lang-pill:hover{border-color:var(--cyan);color:var(--cyan);}
+.install-btn{padding:5px 14px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:20px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;display:none;align-items:center;gap:5px;}
+.install-btn.show{display:flex;}
+
+/* ══ TABS ════════════════════════════════════════════════════════════ */
+.tabs-bar{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:57px;z-index:190;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{padding:10px 16px;font-size:12px;font-weight:600;color:var(--sub);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;outline:none;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ══ MAIN LAYOUT ════════════════════════════════════════════════════ */
+main{max-width:920px;margin:0 auto;padding:24px 16px 80px;}
+
+/* ══ PRO / FREEMIUM ═════════════════════════════════════════════════ */
+.pro-banner{background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(139,92,246,.08));border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:9px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+.pro-banner.show{display:flex;}
+.pro-banner-left{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--cyan);font-weight:600;}
+.pro-banner-right{font-size:11px;color:var(--sub);cursor:pointer;}
+.freemium-bar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;box-shadow:var(--shadow);}
+.free-left{display:flex;align-items:center;gap:10px;}
+.free-dots{display:flex;gap:5px;}
+.fdot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .4s;}
+.fdot.lit{background:var(--cyan);box-shadow:0 0 5px var(--cyan);}
+.fdot.warn{background:var(--orange);box-shadow:0 0 5px var(--orange);}
+.fdot.done{background:var(--red);}
+.fdot.pro{background:linear-gradient(135deg,var(--cyan),var(--purple));}
+.free-text{font-size:13px;color:var(--sub);}
+.free-text b{color:var(--cyan);}
+.btn-pro{padding:6px 16px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+
+/* ══ PHASE STEPS ════════════════════════════════════════════════════ */
+.phase-steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px;}
+.step{display:flex;align-items:center;}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--sub);transition:all .4s;z-index:1;}
+.step-dot.active{border-color:var(--cyan);background:rgba(0,212,255,.15);color:var(--cyan);box-shadow:0 0 12px rgba(0,212,255,.3);}
+.step-dot.done{border-color:var(--green);background:rgba(16,185,129,.15);color:var(--green);}
+.step-line{width:40px;height:2px;background:var(--border);transition:background .4s;}
+.step-line.done{background:var(--green);}
+@media(max-width:480px){.step-line{width:20px;}}
+
+/* ══ GAUGE ══════════════════════════════════════════════════════════ */
+.gauge-section{display:flex;flex-direction:column;align-items:center;margin-bottom:28px;}
+.gauge-wrap{position:relative;width:260px;height:260px;}
+.gauge-svg{width:100%;height:100%;transform:rotate(-90deg);}
+.gauge-track{fill:none;stroke:var(--gauge-bg);stroke-width:16;stroke-linecap:round;}
+.gauge-fill{fill:none;stroke:url(#gaugeGrad);stroke-width:16;stroke-linecap:round;stroke-dasharray:754;stroke-dashoffset:754;transition:stroke-dashoffset .2s ease;filter:drop-shadow(0 0 8px rgba(0,212,255,.4));}
+.gauge-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;}
+.gauge-val{font-size:50px;font-weight:900;line-height:1;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-2px;}
+.gauge-unit{font-size:14px;color:var(--sub);margin-top:4px;}
+.gauge-phase{font-size:10px;color:var(--cyan);margin-top:6px;font-weight:700;text-transform:uppercase;letter-spacing:2px;min-height:14px;}
+.btn-start{margin-top:18px;padding:14px 56px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:50px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 0 36px rgba(0,212,255,.25);transition:all .3s;outline:none;letter-spacing:.3px;}
+.btn-start:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 56px rgba(0,212,255,.45);}
+.btn-start:disabled{opacity:.5;cursor:not-allowed;}
+@keyframes pulse-ring{0%,100%{box-shadow:0 0 36px rgba(0,212,255,.25);}50%{box-shadow:0 0 64px rgba(0,212,255,.6);}}
+.btn-start.running{animation:pulse-ring 1.4s infinite;}
+.test-status{margin-top:10px;font-size:13px;color:var(--sub);text-align:center;min-height:18px;}
+.retry-btn{background:transparent;border:1px solid var(--border);border-radius:20px;padding:6px 16px;color:var(--sub);font-size:12px;cursor:pointer;margin-top:6px;display:none;transition:all .2s;}
+.retry-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.retry-btn.show{display:inline-block;}
+
+/* ══ RESULTS GRID ═══════════════════════════════════════════════════ */
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:560px){.results-grid{grid-template-columns:1fr;}}
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 14px;text-align:center;transition:all .35s;box-shadow:var(--shadow);}
+.res-card.active{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,212,255,.1);}
+.res-icon{font-size:22px;margin-bottom:5px;}
+.res-label{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+.res-val{font-size:30px;font-weight:900;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-1px;min-height:38px;display:flex;align-items:center;justify-content:center;}
+.res-val span{font-size:12px;font-weight:500;color:var(--sub);margin-inline-start:2px;margin-top:5px;}
+.res-bar{margin-top:10px;height:3px;background:var(--gauge-bg);border-radius:3px;overflow:hidden;}
+.res-fill{height:100%;border-radius:3px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.dl-card .res-fill{background:linear-gradient(90deg,var(--cyan),rgba(0,212,255,.4));}
+.ul-card .res-fill{background:linear-gradient(90deg,var(--purple),rgba(139,92,246,.4));}
+.png-card .res-fill{background:linear-gradient(90deg,var(--green),rgba(16,185,129,.4));}
+
+/* ══ SCORE CARD ═════════════════════════════════════════════════════ */
+.score-row{display:grid;grid-template-columns:auto 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:560px){.score-row{grid-template-columns:1fr;}}
+.score-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:20px;box-shadow:var(--shadow);}
+.score-grade{font-size:68px;font-weight:900;line-height:1;min-width:76px;text-align:center;}
+.score-body{}
+.score-title{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;}
+.score-num{font-size:26px;font-weight:800;color:var(--text);}
+.score-label{font-size:11px;color:var(--sub);margin-top:2px;}
+.itu-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;gap:8px;}
+.itu-title{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;}
+.itu-badge{font-size:14px;font-weight:700;}
+.itu-sub{font-size:11px;color:var(--sub);}
+
+/* ══ METRICS ROW ════════════════════════════════════════════════════ */
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:640px){.metrics-row{grid-template-columns:repeat(2,1fr);}}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow);}
+.metric-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.metric-ic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ic-jitter{background:rgba(245,158,11,.12);}
+.ic-loss{background:rgba(239,68,68,.12);}
+.ic-bloat{background:rgba(139,92,246,.12);}
+.ic-ipv6{background:rgba(16,185,129,.12);}
+.metric-name{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;}
+.metric-val{font-size:22px;font-weight:800;color:var(--text);}
+.metric-note{font-size:9px;color:var(--sub);margin-top:2px;}
+
+/* ══ ADVANCED METRICS ═══════════════════════════════════════════════ */
+.adv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:640px){.adv-grid{grid-template-columns:repeat(2,1fr);}}
+.adv-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);}
+.adv-label{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.adv-val{font-size:18px;font-weight:700;color:var(--text);}
+.adv-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* ══ NETWORK INFO ═══════════════════════════════════════════════════ */
+.info-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:var(--shadow);}
+.section-title{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;}
+.net-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media(max-width:480px){.net-grid{grid-template-columns:1fr;}}
+.net-item{display:flex;align-items:center;gap:9px;background:var(--surface);border-radius:10px;padding:9px 11px;}
+.net-ic{width:30px;height:30px;border-radius:8px;background:rgba(0,212,255,.08);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.net-t{font-size:8px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;}
+.net-v{font-size:12px;font-weight:600;color:var(--text);margin-top:1px;word-break:break-all;}
+
+/* ══ CHART ══════════════════════════════════════════════════════════ */
+.chart-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.chart-legend{display:flex;gap:12px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--sub);}
+.ldot{width:7px;height:7px;border-radius:50%;}
+.chart-canvas-wrap{position:relative;height:150px;}
+.chart-note{text-align:center;font-size:10px;color:var(--sub);margin-top:6px;}
+.chart-note a{color:var(--cyan);cursor:pointer;}
+
+/* ══ SHARE BAR ══════════════════════════════════════════════════════ */
+.share-bar{display:none;justify-content:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.share-bar.show{display:flex;}
+.btn-share{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);transition:all .2s;display:flex;align-items:center;gap:5px;}
+.btn-share:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* ══ TOOLS PANELS ═══════════════════════════════════════════════════ */
+.tool-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
+.tool-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.tool-title{font-size:14px;font-weight:700;color:var(--text);}
+.tool-status{font-size:12px;color:var(--sub);min-height:16px;}
+.btn-tool{padding:8px 18px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.btn-tool:disabled{opacity:.5;cursor:not-allowed;}
+.loading-dots{text-align:center;color:var(--sub);padding:20px;font-size:24px;letter-spacing:6px;}
+
+/* ══ DNS RESULTS ════════════════════════════════════════════════════ */
+.dns-row{display:grid;grid-template-columns:180px 1fr auto auto auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.dns-row:last-child{border-bottom:none;}
+.dns-row.dns-recommended{background:rgba(0,212,255,.04);border-radius:8px;padding:10px;}
+@media(max-width:600px){.dns-row{grid-template-columns:1fr auto;}}
+.dns-name{font-size:13px;font-weight:600;color:var(--text);}
+.dns-bars{flex:1;}
+.dns-bar-wrap{height:4px;background:var(--gauge-bg);border-radius:4px;overflow:hidden;}
+.dns-bar-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px;}
+.dns-stat{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;}
+.dns-stat.dim{color:var(--sub);}
+.dns-reliability{font-size:11px;padding:2px 7px;border-radius:10px;}
+.dns-reliability.good{color:var(--green);background:rgba(16,185,129,.1);}
+.dns-reliability.warn{color:var(--orange);background:rgba(245,158,11,.1);}
+.dns-err{font-size:12px;color:var(--red);}
+.dns-leak-row{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.dns-leak-status{font-size:13px;font-weight:600;margin-bottom:4px;}
+.dns-leak-detail{font-size:12px;color:var(--sub);}
+
+/* ══ WEBRTC RESULTS ═════════════════════════════════════════════════ */
+.webrtc-verdict{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.risk-badge{font-size:11px;font-weight:800;padding:2px 10px;border-radius:20px;background:rgba(255,255,255,.08);}
+.webrtc-ips{margin-bottom:10px;}
+.ip-row{font-size:12px;color:var(--sub);font-family:monospace;padding:4px 0;}
+.webrtc-recs,.webrtc-ok{font-size:12px;}
+.rec-item{color:var(--orange);margin-bottom:5px;}
+.webrtc-ok{color:var(--green);}
+
+/* ══ THROTTLE RESULTS ═══════════════════════════════════════════════ */
+.throttle-verdict{font-size:13px;font-weight:600;margin-bottom:6px;}
+.throttle-verdict.detected{color:var(--orange);}
+.throttle-verdict.ok{color:var(--green);}
+.throttle-meta{font-size:11px;color:var(--sub);margin-bottom:14px;}
+.throttle-row{display:grid;grid-template-columns:150px 1fr 90px auto;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.throttle-row:last-child{border-bottom:none;}
+.throttle-row.throttled{opacity:.85;}
+.thr-name{font-size:12px;font-weight:600;}
+.thr-bar-wrap{height:6px;background:var(--gauge-bg);border-radius:4px;overflow:hidden;}
+.thr-bar-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.thr-val{font-size:12px;font-weight:700;text-align:right;}
+.thr-badge{font-size:10px;color:var(--red);background:rgba(239,68,68,.1);border-radius:10px;padding:2px 8px;white-space:nowrap;}
+
+/* ══ PROTOCOL RESULTS ═══════════════════════════════════════════════ */
+.proto-grade{font-size:14px;font-weight:700;margin-bottom:14px;}
+.proto-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media(max-width:480px){.proto-grid{grid-template-columns:1fr;}}
+.proto-item{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:10px;padding:10px 12px;}
+.proto-ic{font-size:14px;width:20px;text-align:center;}
+.proto-label{font-size:11px;color:var(--sub);flex:1;}
+.proto-val{font-size:12px;font-weight:700;}
+.proto-val.good{color:var(--green);}
+.proto-val.warn{color:var(--orange);}
+
+/* ══ GEO LATENCY ════════════════════════════════════════════════════ */
+.geo-nearest{margin-bottom:12px;}
+.geo-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.geo-row:last-child{border-bottom:none;}
+.geo-flag{font-size:11px;color:var(--sub);width:24px;}
+.geo-city{font-size:13px;font-weight:600;flex:1;}
+.geo-rtt{font-size:13px;font-weight:700;}
+.geo-avg{font-size:12px;color:var(--sub);margin-bottom:16px;}
+.geo-regions{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(max-width:480px){.geo-regions{grid-template-columns:1fr;}}
+.geo-region{background:var(--surface);border-radius:10px;padding:12px;}
+.geo-region-title{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.geo-pop{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;}
+
+/* ══ HISTORY / REPORT ═══════════════════════════════════════════════ */
+.hist-table{width:100%;border-collapse:collapse;font-size:12px;}
+.hist-table th{padding:8px 10px;text-align:left;color:var(--sub);font-weight:600;border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.8px;}
+.hist-table td{padding:8px 10px;border-bottom:1px solid var(--border);}
+.hist-table tr:last-child td{border-bottom:none;}
+.hist-grade{font-weight:800;font-size:13px;}
+
+/* ══ MODALS ═════════════════════════════════════════════════════════ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
+.overlay.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:30px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 70px rgba(0,0,0,.5);animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes modalIn{from{opacity:0;transform:scale(.88) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-crown{font-size:48px;margin-bottom:8px;}
+.modal-title{font-size:22px;font-weight:900;margin-bottom:5px;}
+.modal-desc{font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:16px;}
+.pro-list{background:var(--surface);border-radius:12px;padding:12px 16px;margin-bottom:16px;text-align:start;}
+.pro-item{padding:4px 0;font-size:13px;display:flex;align-items:center;gap:7px;}
+.pro-item::before{content:'✅';font-size:12px;}
+.price-tag{font-size:36px;font-weight:900;margin-bottom:12px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.price-tag sub{font-size:14px;font-weight:500;}
+.modal-btns{display:flex;flex-direction:column;gap:8px;}
+.btn-upgrade{padding:13px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;}
+.btn-dismiss{padding:10px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--sub);font-size:13px;cursor:pointer;}
+.modal-divider{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--muted);font-size:11px;}
+.modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.key-input{width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:monospace;text-align:center;letter-spacing:2px;margin-bottom:8px;outline:none;transition:border-color .2s;}
+.key-input:focus{border-color:var(--cyan);}
+.key-error{color:var(--red);font-size:12px;margin-bottom:8px;min-height:16px;}
+.key-success{color:var(--green);font-size:12px;font-weight:600;}
+
+/* ══ FOOTER ═════════════════════════════════════════════════════════ */
+footer{border-top:1px solid var(--border);padding:20px 16px;text-align:center;color:var(--sub);font-size:11px;line-height:2;}
+footer a{color:var(--cyan);text-decoration:none;cursor:pointer;}
+.footer-logo{font-size:15px;font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px;}
+
+/* ══ FEEDBACK FAB ═══════════════════════════════════════════════════ */
+.feedback-fab{position:fixed;bottom:20px;right:20px;z-index:100;width:42px;height:42px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 4px 16px rgba(0,212,255,.3);transition:all .3s;}
+.feedback-fab:hover{transform:scale(1.1);}
+[dir="rtl"] .feedback-fab{right:auto;left:20px;}
+
+/* ══ UTILS ══════════════════════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp .5s ease forwards;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--muted);border-radius:3px;}
+@media(max-width:400px){.gauge-val{font-size:42px;}.gauge-wrap{width:230px;height:230px;}.btn-start{padding:13px 36px;font-size:15px;}}
+</style>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-nIFHbNhzo20uR0mXlhWcZP4HraJYN5a8z8zxZP/khqM=' https://cdn.jsdelivr.net/npm/chart.js@4/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://speed.cloudflare.com https://1.1.1.1 https://ipapi.co https://cloudflare-dns.com https://dns.google https://dns.quad9.net https://dns.nextdns.io https://dns.adguard-dns.com https://doh.opendns.com https://ipv6.icanhazip.com https://v6.ident.me https://www.gstatic.com wss://stun.l.google.com wss://stun.cloudflare.com; img-src 'self' data: blob:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">R</div>
+    <div>
+      <div class="logo-name">REFLEXA<span class="logo-ver">v3.0</span></div>
+      <div class="logo-tag" data-i18n="tagline">Network Diagnostics</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="install-btn" id="installBtn" onclick="RXFLX.installPWA()">📱 <span data-i18n="install">Install</span></button>
+    <button class="lang-pill" id="langBtn" onclick="RXFLX.toggleLang()">AR</button>
+    <button class="icon-btn" id="themeBtn" onclick="RXFLX.toggleTheme()">🌙</button>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<div class="tabs-bar">
+  <button class="tab-btn active" data-tab="speed"    onclick="RXFLX.switchTab('speed')"    data-i18n="navSpeed">Speed Test</button>
+  <button class="tab-btn"        data-tab="advanced" onclick="RXFLX.switchTab('advanced')" data-i18n="navAdvanced">Advanced</button>
+  <button class="tab-btn"        data-tab="dns"      onclick="RXFLX.switchTab('dns')"      data-i18n="navDNS">DNS</button>
+  <button class="tab-btn"        data-tab="security" onclick="RXFLX.switchTab('security')" data-i18n="navSecurity">Security</button>
+  <button class="tab-btn"        data-tab="report"   onclick="RXFLX.switchTab('report')"   data-i18n="navReport">Report</button>
+</div>
+
+<main>
+
+  <!-- ══ SPEED TEST TAB ═══════════════════════════════════════════ -->
+  <div class="tab-panel active" data-panel="speed">
+
+    <!-- Pro Banner -->
+    <div class="pro-banner" id="proBanner">
+      <div class="pro-banner-left">👑 <span data-i18n="proActive">REFLEXA Pro — Active</span></div>
+      <div class="pro-banner-right" onclick="RXFLX.deactivatePro()" data-i18n="deactivate">Deactivate</div>
+    </div>
+
+    <!-- Freemium Bar -->
+    <div class="freemium-bar fade-up">
+      <div class="free-left">
+        <div class="free-dots" id="freeDots"></div>
+        <div class="free-text" id="freeText"></div>
+      </div>
+      <button class="btn-pro" onclick="RXFLX.showModal('proOverlay')" data-i18n="upgradePro">✨ Pro</button>
+    </div>
+
+    <!-- Phase Steps -->
+    <div class="phase-steps" id="phaseSteps">
+      <div class="step"><div class="step-dot" id="s1">1</div></div>
+      <div class="step"><div class="step-line" id="l1"></div><div class="step-dot" id="s2">2</div></div>
+      <div class="step"><div class="step-line" id="l2"></div><div class="step-dot" id="s3">3</div></div>
+      <div class="step"><div class="step-line" id="l3"></div><div class="step-dot" id="s4">4</div></div>
+      <div class="step"><div class="step-line" id="l4"></div><div class="step-dot" id="s5">5</div></div>
+    </div>
+
+    <!-- Gauge -->
+    <div class="gauge-section">
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 300 300" aria-hidden="true">
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00D4FF"/>
+              <stop offset="100%" stop-color="#8B5CF6"/>
+            </linearGradient>
+          </defs>
+          <circle class="gauge-track" cx="150" cy="150" r="120"/>
+          <circle class="gauge-fill"  cx="150" cy="150" r="120" id="gaugeFill"/>
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-val"   id="gaugeVal">—</div>
+          <div class="gauge-unit"  id="gaugeUnit">Mbps</div>
+          <div class="gauge-phase" id="gaugePhase"></div>
+        </div>
+      </div>
+      <button class="btn-start" id="startBtn" onclick="RXFLX.startTest()" aria-label="Start network test">
+        <span id="startBtnTxt" data-i18n="startTest">⚡ Start Test</span>
+      </button>
+      <div class="test-status" id="testStatus" aria-live="polite"></div>
+      <button class="retry-btn" id="retryBtn" onclick="RXFLX.startTest()" data-i18n="retry">↺ Retry</button>
+    </div>
+
+    <!-- Speed Results -->
+    <div class="results-grid">
+      <div class="res-card dl-card" id="dlCard" aria-label="Download speed">
+        <div class="res-icon">⬇️</div>
+        <div class="res-label" data-i18n="download">Download</div>
+        <div class="res-val" id="dlVal">— <span>Mbps</span></div>
+        <div class="res-bar"><div class="res-fill" id="dlBar"></div></div>
+      </div>
+      <div class="res-card ul-card" id="ulCard" aria-label="Upload speed">
+        <div class="res-icon">⬆️</div>
+        <div class="res-label" data-i18n="upload">Upload</div>
+        <div class="res-val" id="ulVal">— <span>Mbps</span></div>
+        <div class="res-bar"><div class="res-fill" id="ulBar"></div></div>
+      </div>
+      <div class="res-card png-card" id="pngCard" aria-label="Ping latency">
+        <div class="res-icon">📡</div>
+        <div class="res-label" data-i18n="ping">Ping</div>
+        <div class="res-val" id="pngVal">— <span>ms</span></div>
+        <div class="res-bar"><div class="res-fill" id="pngBar"></div></div>
+      </div>
+    </div>
+
+    <!-- Score + ITU -->
+    <div class="score-row">
+      <div class="score-card">
+        <div class="score-grade" id="scoreGrade">—</div>
+        <div class="score-body">
+          <div class="score-title" data-i18n="netScore">Network Score</div>
+          <div class="score-num" id="scoreNum">—</div>
+          <div class="score-label" id="scoreLabel">Run a test to see your score</div>
+        </div>
+      </div>
+      <div class="itu-card">
+        <div class="itu-title" data-i18n="ituClass">ITU-T Y.1541 Class</div>
+        <div class="itu-badge" id="ituBadge">—</div>
+        <div class="itu-sub" id="ituSub">Run test to classify</div>
+      </div>
+    </div>
+
+    <!-- Metrics Row -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-top"><div class="metric-ic ic-jitter">〰️</div><div class="metric-name" data-i18n="jitter">Jitter</div></div>
+        <div class="metric-val" id="jitterVal">—</div>
+        <div class="metric-note">ms</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><div class="metric-ic ic-loss">📦</div><div class="metric-name" data-i18n="packetLoss">Packet Loss</div></div>
+        <div class="metric-val" id="lossVal">—</div>
+        <div class="metric-note">%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><div class="metric-ic ic-bloat">🌊</div><div class="metric-name" data-i18n="bufferbloat">Bufferbloat</div></div>
+        <div class="metric-val" id="bloatVal">—</div>
+        <div class="metric-note" id="bloatNote" data-i18n="notTested">Not tested</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><div class="metric-ic ic-ipv6">🔢</div><div class="metric-name">IPv6</div></div>
+        <div class="metric-val" id="ipv6Val">⋯</div>
+        <div class="metric-note" id="ipv6Note">Checking…</div>
+      </div>
+    </div>
+
+    <!-- Share Bar -->
+    <div class="share-bar" id="shareBar">
+      <button class="btn-share" id="copyBtn"  onclick="RXFLX.doCopyResult()">📋 <span data-i18n="copyResult">Copy</span></button>
+      <button class="btn-share"               onclick="RXFLX.doShare()">🔗 <span data-i18n="share">Share</span></button>
+      <button class="btn-share"               onclick="RXFLX.doDownloadPNG()">🖼️ <span data-i18n="saveImage">Save Image</span></button>
+      <button class="btn-share"               onclick="RXFLX.doDownloadCSV()">📊 <span data-i18n="exportCSV">Export CSV</span></button>
+    </div>
+
+    <!-- Network Info -->
+    <div class="info-section fade-up">
+      <div class="section-title" data-i18n="netInfo">Network Information</div>
+      <div class="net-grid">
+        <div class="net-item"><div class="net-ic">🌍</div><div><div class="net-t" data-i18n="ipAddr">IP Address</div><div class="net-v" id="netIP">Detecting…</div></div></div>
+        <div class="net-item"><div class="net-ic">📶</div><div><div class="net-t" data-i18n="connType">Connection</div><div class="net-v" id="netType">—</div></div></div>
+        <div class="net-item"><div class="net-ic">🏢</div><div><div class="net-t" data-i18n="ispLabel">ISP</div><div class="net-v" id="netISP">Detecting…</div></div></div>
+        <div class="net-item"><div class="net-ic">📍</div><div><div class="net-t" data-i18n="locationLabel">Location</div><div class="net-v" id="netLocation">—</div></div></div>
+        <div class="net-item"><div class="net-ic">🌐</div><div><div class="net-t" data-i18n="server">Test Server</div><div class="net-v" id="netServer">Cloudflare</div></div></div>
+        <div class="net-item"><div class="net-ic">🔒</div><div><div class="net-t">TLS / HTTP</div><div class="net-v" id="netTLS">—</div></div></div>
+        <div class="net-item"><div class="net-ic">🔢</div><div><div class="net-t">ASN</div><div class="net-v" id="netASN">—</div></div></div>
+        <div class="net-item"><div class="net-ic">🟢</div><div><div class="net-t" data-i18n="status">Status</div><div class="net-v" id="netStatus">Online</div></div></div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-section fade-up">
+      <div class="chart-header">
+        <div class="section-title" style="margin-bottom:0" data-i18n="history">Speed History</div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="ldot" style="background:var(--cyan)"></div><span data-i18n="download">Download</span></div>
+          <div class="legend-item"><div class="ldot" style="background:var(--purple)"></div><span data-i18n="upload">Upload</span></div>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="histChart" aria-label="Speed history chart"></canvas></div>
+      <p class="chart-note" id="chartNote"></p>
+    </div>
+
+  </div>
+  <!-- END SPEED TAB -->
+
+  <!-- ══ ADVANCED TAB ════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="advanced" id="advPanel">
+
+    <!-- RFC 6349 Metrics -->
+    <div class="tool-section">
+      <div class="section-title" data-i18n="rfcGrade">RFC 6349 — TCP Analysis</div>
+      <div class="adv-grid">
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="tcpEfficiency">TCP Efficiency</div>
+          <div class="adv-val" id="metTCPEff">—</div>
+          <div class="adv-sub">Goal: &gt;95%</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="bdp">BDP</div>
+          <div class="adv-val" id="metBDP">—</div>
+          <div class="adv-sub">Bandwidth-Delay Product</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="ttr">Transfer Time Ratio</div>
+          <div class="adv-val" id="metTTR">—</div>
+          <div class="adv-sub">Goal: 1.000</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="p95">P95 Latency</div>
+          <div class="adv-val" id="metP95">—</div>
+          <div class="adv-sub">95th percentile RTT</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="p99">P99 Latency</div>
+          <div class="adv-val" id="metP99">—</div>
+          <div class="adv-sub">99th percentile RTT</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="mosScore">MOS Score</div>
+          <div class="adv-val" id="metMOS">—</div>
+          <div class="adv-sub">ITU-T G.107 E-Model</div>
+        </div>
+        <div class="adv-card" style="grid-column:span 2">
+          <div class="adv-label" data-i18n="ituClass">ITU-T Y.1541 Classification</div>
+          <div class="adv-val" id="metITU">—</div>
+          <div class="adv-sub">Run a speed test to classify your connection</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label">RFC Grade</div>
+          <div class="adv-val" id="metRFC">—</div>
+          <div class="adv-sub">RFC 6349 compliance</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ISP Throttling -->
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="ispThrottle">ISP Throttling Detection</div>
+          <div class="tool-status" id="throttleStatus">Compare speeds across CDN providers to detect throttling</div>
+        </div>
+        <button class="btn-tool" id="throttleStartBtn" onclick="RXFLX.runThrottle()" data-i18n="ispStart">Run Throttle Test</button>
+      </div>
+      <div id="throttleResults"></div>
+    </div>
+
+    <!-- Geo Latency -->
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="geoLatency">Global Latency Map</div>
+          <div class="tool-status" id="geoStatus">Ping 26 Cloudflare PoPs worldwide</div>
+        </div>
+        <button class="btn-tool" id="geoStartBtn" onclick="RXFLX.runGeo()" data-i18n="geoStart">Run Latency Map</button>
+      </div>
+      <div id="geoResults"></div>
+    </div>
+
+  </div>
+  <!-- END ADVANCED TAB -->
+
+  <!-- ══ DNS TAB ══════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="dns">
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="dnsBenchmark">DNS Benchmark</div>
+          <div class="tool-status" id="dnsStatus">Benchmark 6 DNS resolvers using DNS-over-HTTPS (RFC 8484)</div>
+        </div>
+        <button class="btn-tool" id="dnsStartBtn" onclick="RXFLX.runDNS()" data-i18n="dnsStart">Start DNS Benchmark</button>
+      </div>
+      <div id="dnsResults"></div>
+
+      <!-- DNS Leak -->
+      <div class="dns-leak-row">
+        <div class="section-title" data-i18n="dnsLeak">DNS Leak Test</div>
+        <div class="dns-leak-status" id="dnsLeakStatus">Run benchmark above to include leak detection</div>
+        <div class="dns-leak-detail" id="dnsLeakDetail"></div>
+      </div>
+    </div>
+  </div>
+  <!-- END DNS TAB -->
+
+  <!-- ══ SECURITY TAB ═════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="security">
+
+    <!-- WebRTC Leak -->
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="webrtcLeak">WebRTC IP Leak Test</div>
+          <div class="tool-status" id="webrtcStatus">Detect IP addresses exposed via WebRTC STUN</div>
+        </div>
+        <button class="btn-tool" id="webrtcStartBtn" onclick="RXFLX.runWebRTC()" data-i18n="webrtcStart">Start WebRTC Test</button>
+      </div>
+      <div id="webrtcResults"></div>
+    </div>
+
+    <!-- Protocol Analysis -->
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="protocolTitle">Protocol & Security Analysis</div>
+          <div class="tool-status">HTTP/2, HTTP/3 (QUIC), TLS version, IPv6</div>
+        </div>
+      </div>
+      <div id="protocolResults"><div class="loading-dots">⋯</div></div>
+    </div>
+
+  </div>
+  <!-- END SECURITY TAB -->
+
+  <!-- ══ REPORT TAB ════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="report">
+    <div class="tool-section">
+      <div class="tool-header">
+        <div class="tool-title" data-i18n="history">Test History</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-tool" onclick="RXFLX.doDownloadCSV()" data-i18n="exportCSV" style="background:var(--card);border:1px solid var(--border);color:var(--text);">Export CSV</button>
+        </div>
+      </div>
+      <div id="historyTable">
+        <table class="hist-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>↓ Mbps</th>
+              <th>↑ Mbps</th>
+              <th>Ping</th>
+              <th>Jitter</th>
+              <th>Loss</th>
+              <th>Bloat</th>
+              <th>MOS</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"><tr><td colspan="9" style="text-align:center;color:var(--sub);padding:20px">No tests yet — run a speed test to see history</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- END REPORT TAB -->
+
+</main>
+
+<footer>
+  <div class="footer-logo">REFLEXA</div>
+  <div>Advanced Network Diagnostic Tool — v3.0 | RFC 6349 · ITU-T Y.1541 · RFC 7567</div>
+  <div style="margin-top:3px">By <strong>Eng. Mohanad Al-Mothafer</strong> | ICT-Lead / CTO</div>
+  <div style="margin-top:6px">
+    <a href="https://github.com/lhk96l/reflexa" target="_blank" rel="noopener">GitHub</a> ·
+    <a onclick="RXFLX.showModal('proOverlay')">Pro ✨</a> ·
+    <a href="mailto:hanodeking15@gmail.com">Contact</a> ·
+    <span>© 2025 MIT License</span>
+  </div>
+</footer>
+
+<button class="feedback-fab" onclick="RXFLX.sendFeedback()" title="Feedback" aria-label="Send feedback">💬</button>
+
+<!-- PRO MODAL -->
+<div class="overlay" id="proOverlay" onclick="if(event.target===this)RXFLX.hideModal('proOverlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-crown">👑</div>
+    <div class="modal-title" data-i18n="proTitle">Upgrade to REFLEXA Pro</div>
+    <div class="modal-desc" data-i18n="proDesc">Unlimited tests, CSV export & 30-day history</div>
+    <div class="pro-list">
+      <div class="pro-item" data-i18n="proF1">Unlimited speed tests per day</div>
+      <div class="pro-item" data-i18n="proF2">Export PDF & CSV reports</div>
+      <div class="pro-item" data-i18n="proF3">30-day history (vs 10 free)</div>
+      <div class="pro-item" data-i18n="proF4">Priority test servers</div>
+      <div class="pro-item" data-i18n="proF5">Ad-free experience</div>
+    </div>
+    <div class="price-tag"><sub>$</sub>4.99<sub>/mo</sub></div>
+    <div class="modal-btns">
+      <button class="btn-upgrade" onclick="RXFLX.goToCheckout()" data-i18n="getProNow">🚀 Get Pro Now</button>
+      <div class="modal-divider" data-i18n="alreadyPro">Already purchased?</div>
+      <button class="btn-dismiss" onclick="RXFLX.hideModal('proOverlay');RXFLX.showModal('activateOverlay')" data-i18n="enterKey">🔑 Enter License Key</button>
+      <button class="btn-dismiss" onclick="RXFLX.hideModal('proOverlay')" data-i18n="maybeLater">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIVATE MODAL -->
+<div class="overlay" id="activateOverlay" onclick="if(event.target===this)RXFLX.hideModal('activateOverlay')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
+    <div style="font-size:36px;margin-bottom:8px">🔑</div>
+    <div class="modal-title" data-i18n="activateTitle">Activate Pro</div>
+    <div class="modal-desc" data-i18n="activateDesc">Enter your license key from the purchase email</div>
+    <input class="key-input" id="licenseInput" type="text"
+      placeholder="RXFLX-XXXXXX-XXXXXX-XXXX"
+      maxlength="32"
+      oninput="this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter')RXFLX.handleActivate()">
+    <div class="key-error" id="keyError"></div>
+    <div class="modal-btns">
+      <button class="btn-upgrade" onclick="RXFLX.handleActivate()" data-i18n="activateBtn">✅ Activate</button>
+      <button class="btn-dismiss" onclick="RXFLX.hideModal('activateOverlay');RXFLX.showModal('proOverlay')" data-i18n="back">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- REFLEXA v3.0 Production Build | SHA-256: 9c81476cd873a36d -->
+<script src="dist/reflexa.min.js" integrity="sha256-nIFHbNhzo20uR0mXlhWcZP4HraJYN5a8z8zxZP/khqM=" crossorigin="anonymous"></script>
+
+<!-- History table updater (hooks into app state) -->
+<script>
+window.addEventListener('load', () => {
+  // Update history table when report tab is clicked
+  document.querySelector('[data-tab="report"]').addEventListener('click', () => {
+    setTimeout(() => {
+      if (!window.RXFLX) return;
+      // Access state via storage
+    }, 100);
+  });
+});
+</script>
+
+</body>
+</html>

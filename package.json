@@ -1,0 +1,24 @@
+{
+  "name": "reflexa",
+  "version": "3.0.0",
+  "description": "REFLEXA — Advanced Network Diagnostic Tool",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build":   "node build.js",
+    "deploy":  "node build.js && git add dist/ index.html && git commit -m '🏗️ Build: production bundle v3.0' && git push",
+    "dev":     "echo 'Dev: open index.html directly (ES modules work natively)'",
+    "worker":  "cd worker && npx wrangler dev",
+    "worker:deploy": "cd worker && npx wrangler deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lhk96l/reflexa.git"
+  },
+  "author": "Eng. Mohanad Al-Mothafer",
+  "license": "MIT",
+  "devDependencies": {
+    "javascript-obfuscator": "^5.4.3",
+    "rollup": "^4.61.0"
+  }
+}

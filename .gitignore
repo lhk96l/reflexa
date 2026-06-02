@@ -14,11 +14,16 @@ yarn-error.log
 .DS_Store
 Thumbs.db
 
-# Build
-dist/
-build/
-*.min.js
-*.min.css
+# Build intermediates (keep dist/ for GitHub Pages deployment)
+dist/reflexa.bundle.js
+node_modules/
+worker/node_modules/
+
+# Secrets — never commit
+.env
+.env.*
+*.secret
+wrangler.local.toml
 
 # Logs
 logs/
