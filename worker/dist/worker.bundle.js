@@ -138,7 +138,7 @@ async function sendLicenseEmail(to, licenseKey, plan, resendApiKey) {
 
 // ══ index.js (Main Handler) ═══════════════════════════════════════
 const CORS = {
-  'Access-Control-Allow-Origin':  'https://lhk96l.github.io',
+  'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
@@ -240,6 +240,125 @@ async function handleResendKey(request, env) {
   return json({ ok: true });
 }
 
+// ══ Magic Link System ═════════════════════════════════════════════
+// POST /api/magic-link — يرسل رابط تفعيل للإيميل
+async function handleMagicLink(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return json({ ok: false, reason: 'Bad request' }, 400); }
+
+  const email = (body.email || '').trim().toLowerCase();
+  if (!email || !email.includes('@')) return json({ ok: false, reason: 'Invalid email' }, 400);
+
+  // Rate limit: مرة واحدة كل 60 ثانية لنفس الإيميل
+  const rateLimitKey = `ratelimit:ml:${email}`;
+  const lastRequest  = await env.LICENSES.get(rateLimitKey);
+  if (lastRequest) return json({ ok: false, reason: 'Please wait 60 seconds before requesting again' }, 429);
+
+  // فحص وجود ترخيص نشط
+  const licenseKey = await env.LICENSES.get(`email:${email}:latest`);
+  if (!licenseKey) return json({ ok: false, reason: 'No active license found for this email' }, 404);
+
+  // التحقق أن الترخيص لم ينتهِ
+  const keyMeta = await env.LICENSES.get(`key:${licenseKey}`);
+  if (keyMeta) {
+    const parsed = JSON.parse(keyMeta);
+    if (!parsed.active) return json({ ok: false, reason: 'License has been revoked' }, 403);
+  }
+
+  // توليد Magic Token — صالح 10 دقائق
+  const nonce    = Math.random().toString(36).slice(2);
+  const exp      = Date.now() + 10 * 60 * 1000;
+  const payload  = `${email}|${exp}|${nonce}`;
+  const sigHex   = await hmacHex(payload, env.RXFLX_SECRET);
+  const token    = btoa(payload).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'') + '.' + sigHex.slice(0,12).toUpperCase();
+
+  // حفظ في KV مع انتهاء 10 دقائق
+  await env.LICENSES.put(`magic:${token}`, JSON.stringify({ email, exp, licenseKey, used: false }), { expirationTtl: 600 });
+
+  // Rate limit — 60 ثانية
+  await env.LICENSES.put(rateLimitKey, '1', { expirationTtl: 60 });
+
+  // رابط التفعيل
+  const activationUrl = `https://lhk96l.github.io/reflexa/?rxflx_token=${encodeURIComponent(token)}`;
+
+  // إرسال الإيميل
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+    body{font-family:-apple-system,sans-serif;background:#0B0F1E;color:#F1F5F9;margin:0;padding:0;}
+    .wrap{max-width:520px;margin:0 auto;padding:40px 20px;}
+    .logo{font-size:26px;font-weight:900;color:#00D4FF;letter-spacing:2px;margin-bottom:4px;}
+    .sub{font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:28px;}
+    .card{background:#151D2E;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px;margin-bottom:16px;text-align:center;}
+    .title{font-size:20px;font-weight:800;margin-bottom:8px;}
+    .desc{font-size:13px;color:#94A3B8;margin-bottom:24px;line-height:1.6;}
+    .btn{display:inline-block;padding:15px 36px;background:linear-gradient(135deg,#00D4FF,#8B5CF6);border-radius:50px;color:#0B0F1E;font-weight:900;font-size:15px;text-decoration:none;letter-spacing:.5px;}
+    .warn{font-size:11px;color:#4B5563;margin-top:16px;}
+    .footer{font-size:11px;color:#374151;text-align:center;margin-top:24px;line-height:1.9;}
+  </style></head><body><div class="wrap">
+    <div class="logo">REFLEXA</div>
+    <div class="sub">Advanced Network Diagnostic Tool</div>
+    <div class="card">
+      <div class="title">🔗 Activate Pro on your device</div>
+      <div class="desc">Click the button below to instantly activate REFLEXA Pro on this device.<br>This link expires in <strong>10 minutes</strong>.</div>
+      <a href="${activationUrl}" class="btn">⚡ Activate REFLEXA Pro</a>
+      <div class="warn">⚠️ Do not share this link. One-time use only.</div>
+    </div>
+    <div class="footer">REFLEXA · By Eng. Mohanad Al-Mothafer<br>If you didn't request this, ignore this email.</div>
+  </div></body></html>`;
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from:    'REFLEXA <onboarding@resend.dev>',
+      to:      [email],
+      subject: '🔗 Activate REFLEXA Pro — Magic Link (10 min)',
+      html,
+    }),
+  });
+
+  return json({ ok: true, message: 'Magic link sent to your email' });
+}
+
+// GET /api/activate?rxflx_token=xxx — يتحقق من التوكن ويرجع الترخيص
+async function handleActivateToken(request, env) {
+  const url   = new URL(request.url);
+  const token = url.searchParams.get('rxflx_token') || '';
+  if (!token) return json({ valid: false, reason: 'No token' }, 400);
+
+  const stored = await env.LICENSES.get(`magic:${token}`);
+  if (!stored) return json({ valid: false, reason: 'Token expired or invalid' }, 404);
+
+  const data = JSON.parse(stored);
+
+  // فحص انتهاء الصلاحية
+  if (Date.now() > data.exp) return json({ valid: false, reason: 'Token expired' }, 410);
+
+  // فحص الاستخدام المسبق
+  if (data.used) return json({ valid: false, reason: 'Token already used' }, 409);
+
+  // تحقق HMAC من التوكن
+  const parts   = token.split('.');
+  if (parts.length !== 2) return json({ valid: false, reason: 'Malformed token' }, 400);
+  const payload  = atob(parts[0].replace(/-/g,'+').replace(/_/g,'/'));
+  const sigCheck = (await hmacHex(payload, env.RXFLX_SECRET)).slice(0,12).toUpperCase();
+  if (sigCheck !== parts[1]) return json({ valid: false, reason: 'Invalid token signature' }, 401);
+
+  // تفعيل — وضع علامة "مستخدم"
+  data.used = true;
+  await env.LICENSES.put(`magic:${token}`, JSON.stringify(data), { expirationTtl: 60 });
+
+  // جلب معلومات الترخيص
+  const keyResult = await verifyKey(data.licenseKey, env.RXFLX_SECRET);
+
+  return json({
+    valid:      true,
+    key:        data.licenseKey,
+    email:      data.email,
+    expiry:     keyResult.expiry,
+    features:   keyResult.features,
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url    = new URL(request.url);
@@ -251,7 +370,9 @@ export default {
       if (url.pathname === '/webhook/lemonsqueezy' && method === 'POST') return await handleWebhook(request, env);
       if (url.pathname === '/api/validate'         && method === 'POST') return await handleValidate(request, env);
       if (url.pathname === '/api/resend-key'       && method === 'POST') return await handleResendKey(request, env);
-      if (url.pathname === '/api/health'           && method === 'GET')  return json({ status: 'ok', version: '3.0.0', ts: Date.now() });
+      if (url.pathname === '/api/magic-link'       && method === 'POST') return await handleMagicLink(request, env);
+      if (url.pathname === '/api/activate'         && method === 'GET')  return await handleActivateToken(request, env);
+      if (url.pathname === '/api/health'           && method === 'GET')  return json({ status: 'ok', version: '3.1.0', ts: Date.now() });
       return json({ error: 'Not found' }, 404);
     } catch (err) {
       console.error('[RXFLX Worker]', err);

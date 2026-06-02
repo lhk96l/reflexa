@@ -709,6 +709,91 @@ async function handleActivate() {
   }
 }
 
+// ── Magic Link System ─────────────────────────────────────────────
+const WORKER_URL = 'https://reflexa-license.hanodeking15.workers.dev';
+
+// طلب Magic Link بالإيميل
+async function handleMagicLinkRequest() {
+  const emailInput = $('magicEmailInput');
+  const statusEl   = $('magicStatus');
+  const btn        = $('magicBtn');
+  const email      = emailInput?.value?.trim().toLowerCase();
+
+  if (!email || !email.includes('@')) {
+    if (statusEl) { statusEl.textContent = 'Please enter a valid email'; statusEl.style.color = 'var(--red)'; }
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  if (statusEl) { statusEl.textContent = 'Sending magic link…'; statusEl.style.color = 'var(--sub)'; }
+
+  try {
+    const res  = await fetch(`${WORKER_URL}/api/magic-link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      if (statusEl) {
+        statusEl.style.color = 'var(--green)';
+        statusEl.textContent = `✅ Magic link sent to ${email} — check your inbox (10 min)`;
+      }
+    } else {
+      if (statusEl) {
+        statusEl.style.color = 'var(--red)';
+        statusEl.textContent = `⚠️ ${data.reason || 'No license found for this email'}`;
+      }
+    }
+  } catch {
+    if (statusEl) { statusEl.textContent = '⚠️ Connection error — try again'; statusEl.style.color = 'var(--red)'; }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '📧 Send Magic Link'; }
+  }
+}
+
+// معالجة التوكن عند فتح الصفحة (?rxflx_token=...)
+async function checkMagicToken() {
+  const params = new URLSearchParams(location.search);
+  const token  = params.get('rxflx_token');
+  if (!token) return;
+
+  // أزل التوكن من URL بدون تحديث الصفحة
+  const cleanUrl = location.pathname;
+  history.replaceState({}, '', cleanUrl);
+
+  // أظهر رسالة انتظار
+  const notify = document.createElement('div');
+  notify.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--cyan);border-radius:12px;padding:14px 24px;z-index:999;font-size:13px;color:var(--cyan);box-shadow:0 4px 20px rgba(0,212,255,.2)';
+  notify.textContent = '🔗 Verifying magic link…';
+  document.body.appendChild(notify);
+
+  try {
+    const res  = await fetch(`${WORKER_URL}/api/activate?rxflx_token=${encodeURIComponent(token)}`);
+    const data = await res.json();
+
+    if (data.valid && data.key) {
+      // تفعيل Pro مباشرة
+      await activateLicense(data.key);
+      state.proActive = true;
+      setFreemiumUI();
+      notify.style.borderColor = 'var(--green)';
+      notify.style.color = 'var(--green)';
+      notify.innerHTML  = `✅ REFLEXA Pro activated! Welcome back 👑`;
+      setTimeout(() => notify.remove(), 4000);
+    } else {
+      notify.style.borderColor = 'var(--red)';
+      notify.style.color = 'var(--red)';
+      notify.textContent = `⚠️ ${data.reason || 'Invalid or expired link'}`;
+      setTimeout(() => notify.remove(), 5000);
+    }
+  } catch {
+    notify.textContent = '⚠️ Connection error — try again';
+    setTimeout(() => notify.remove(), 4000);
+  }
+}
+
 // ── Tab Navigation ────────────────────────────────────────────────
 function switchTab(tabName) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
@@ -783,6 +868,9 @@ async function init() {
     if (e.key === 'Enter' && !state.testing && document.activeElement.tagName !== 'INPUT') startTest();
   });
 
+  // فحص Magic Token عند فتح الصفحة
+  await checkMagicToken();
+
   // Expose to HTML onclick
   window.RXFLX = {
     startTest, runDNS, runWebRTC, runThrottle, runGeo,
@@ -791,6 +879,7 @@ async function init() {
     switchTab,
     showModal, hideModal,
     handleActivate,
+    handleMagicLinkRequest,
     deactivatePro: async () => { if (confirm('Deactivate Pro?')) { await deactivatePro(); setFreemiumUI(); } },
     goToCheckout: () => window.open('https://lhk96l.gumroad.com/l/reflexa-pro', '_blank'),
     doDownloadPNG, doDownloadCSV, doCopyResult, doShare,

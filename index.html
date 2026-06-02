@@ -712,22 +712,64 @@ footer a{color:var(--cyan);text-decoration:none;cursor:pointer;}
 
 <!-- ACTIVATE MODAL -->
 <div class="overlay" id="activateOverlay" onclick="if(event.target===this)RXFLX.hideModal('activateOverlay')">
-  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:380px">
     <div style="font-size:36px;margin-bottom:8px">🔑</div>
     <div class="modal-title" data-i18n="activateTitle">Activate Pro</div>
-    <div class="modal-desc" data-i18n="activateDesc">Enter your license key from the purchase email</div>
-    <input class="key-input" id="licenseInput" type="text"
-      placeholder="RXFLX-XXXXXX-XXXXXX-XXXX"
-      maxlength="32"
-      oninput="this.value=this.value.toUpperCase()"
-      onkeydown="if(event.key==='Enter')RXFLX.handleActivate()">
-    <div class="key-error" id="keyError"></div>
-    <div class="modal-btns">
-      <button class="btn-upgrade" onclick="RXFLX.handleActivate()" data-i18n="activateBtn">✅ Activate</button>
-      <button class="btn-dismiss" onclick="RXFLX.hideModal('activateOverlay');RXFLX.showModal('proOverlay')" data-i18n="back">← Back</button>
+
+    <!-- Tab switcher -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;background:var(--surface);border-radius:10px;padding:4px;">
+      <button id="tabKey" onclick="switchActivateTab('key')"
+        style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:var(--cyan);color:#0B0F1E;transition:all .2s">
+        🔑 License Key
+      </button>
+      <button id="tabEmail" onclick="switchActivateTab('email')"
+        style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--sub);transition:all .2s">
+        📧 Magic Link
+      </button>
     </div>
+
+    <!-- Panel: License Key -->
+    <div id="panelKey">
+      <div class="modal-desc" data-i18n="activateDesc">Enter your license key from the purchase email</div>
+      <input class="key-input" id="licenseInput" type="text"
+        placeholder="RXFLX-XXXXXX-XXXXXX-XX-XXXXXXXX"
+        maxlength="36"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')RXFLX.handleActivate()">
+      <div class="key-error" id="keyError"></div>
+      <div class="modal-btns">
+        <button class="btn-upgrade" onclick="RXFLX.handleActivate()" data-i18n="activateBtn">✅ Activate</button>
+      </div>
+    </div>
+
+    <!-- Panel: Magic Link -->
+    <div id="panelEmail" style="display:none">
+      <div class="modal-desc">Enter the email you used to purchase — we'll send a magic link to activate on this device instantly.</div>
+      <input class="key-input" id="magicEmailInput" type="email"
+        placeholder="your@email.com"
+        style="letter-spacing:normal;font-family:inherit"
+        onkeydown="if(event.key==='Enter')RXFLX.handleMagicLinkRequest()">
+      <div class="key-error" id="magicStatus" style="min-height:32px;font-size:12px"></div>
+      <div class="modal-btns">
+        <button class="btn-upgrade" id="magicBtn" onclick="RXFLX.handleMagicLinkRequest()">📧 Send Magic Link</button>
+      </div>
+    </div>
+
+    <button class="btn-dismiss" style="margin-top:8px;width:100%" onclick="RXFLX.hideModal('activateOverlay');RXFLX.showModal('proOverlay')" data-i18n="back">← Back</button>
   </div>
 </div>
+
+<script>
+function switchActivateTab(tab) {
+  const isKey = tab === 'key';
+  document.getElementById('panelKey').style.display   = isKey ? '' : 'none';
+  document.getElementById('panelEmail').style.display = isKey ? 'none' : '';
+  document.getElementById('tabKey').style.background   = isKey ? 'var(--cyan)' : 'transparent';
+  document.getElementById('tabKey').style.color        = isKey ? '#0B0F1E' : 'var(--sub)';
+  document.getElementById('tabEmail').style.background = isKey ? 'transparent' : 'var(--cyan)';
+  document.getElementById('tabEmail').style.color      = isKey ? 'var(--sub)' : '#0B0F1E';
+}
+</script>
 
 <!-- App Module -->
 <script type="module" src="src/app.js"></script>
