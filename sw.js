@@ -1,7 +1,7 @@
 // REFLEXA v3.0 — Professional Service Worker
 // Strategy: Cache-First for shell, Network-First for test endpoints
 
-const VERSION     = '3.0.0';
+const VERSION     = '3.1.0';
 const SHELL_CACHE = `reflexa-shell-v${VERSION}`;
 const CDN_CACHE   = `reflexa-cdn-v${VERSION}`;
 const OLD_PATTERN = /^reflexa-(shell|cdn|dynamic|v\d)-/;

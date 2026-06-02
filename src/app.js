@@ -886,7 +886,10 @@ async function init() {
         monthly: 'https://lhk96l.lemonsqueezy.com/checkout/buy/55058b83-34ae-4f1e-b734-3fe21a5b9df4',
         annual:  'https://lhk96l.lemonsqueezy.com/checkout/buy/d91818cb-e840-41fa-918f-5afaac1956c9',
       };
-      window.open(urls[plan] || urls.monthly, '_blank');
+      // استخدم location.href على الموبايل لتجنب حجب popup
+      const url = urls[plan] || urls.monthly;
+      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+      if (isMobile) { window.location.href = url; } else { window.open(url, '_blank'); }
     },
     doDownloadPNG, doDownloadCSV, doCopyResult, doShare,
     sendFeedback: () => window.open('mailto:hanodeking15@gmail.com?subject=REFLEXA%20Feedback'),
