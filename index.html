@@ -700,9 +700,20 @@ footer a{color:var(--cyan);text-decoration:none;cursor:pointer;}
       <div class="pro-item" data-i18n="proF4">Priority test servers</div>
       <div class="pro-item" data-i18n="proF5">Ad-free experience</div>
     </div>
-    <div class="price-tag"><sub>$</sub>4.99<sub>/mo</sub></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;">
+      <div style="background:var(--surface);border:1px solid var(--cyan);border-radius:12px;padding:10px 18px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;color:var(--cyan)">$4.99<span style="font-size:12px;font-weight:500;color:var(--sub)">/mo</span></div>
+        <div style="font-size:10px;color:var(--sub);margin-top:2px">Monthly</div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(139,92,246,.1));border:1px solid var(--purple);border-radius:12px;padding:10px 18px;text-align:center;position:relative;">
+        <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--cyan),var(--purple));color:#0B0F1E;font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;">BEST VALUE</div>
+        <div style="font-size:22px;font-weight:900;color:var(--purple)">$39.99<span style="font-size:12px;font-weight:500;color:var(--sub)">/yr</span></div>
+        <div style="font-size:10px;color:var(--green);margin-top:2px">Save 33%</div>
+      </div>
+    </div>
     <div class="modal-btns">
-      <button class="btn-upgrade" onclick="RXFLX.goToCheckout()" data-i18n="getProNow">🚀 Get Pro Now</button>
+      <button class="btn-upgrade" onclick="RXFLX.goToCheckout('monthly')" data-i18n="getProNow">🚀 Get Pro Now — $4.99/mo</button>
+      <button class="btn-dismiss" style="border-color:rgba(0,212,255,.3);color:var(--cyan)" onclick="RXFLX.goToCheckout('annual')">💰 Annual Plan — $39.99/yr (Save 33%)</button>
       <div class="modal-divider" data-i18n="alreadyPro">Already purchased?</div>
       <button class="btn-dismiss" onclick="RXFLX.hideModal('proOverlay');RXFLX.showModal('activateOverlay')" data-i18n="enterKey">🔑 Enter License Key</button>
       <button class="btn-dismiss" onclick="RXFLX.hideModal('proOverlay')" data-i18n="maybeLater">Maybe later</button>

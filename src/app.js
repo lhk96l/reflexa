@@ -881,7 +881,13 @@ async function init() {
     handleActivate,
     handleMagicLinkRequest,
     deactivatePro: async () => { if (confirm('Deactivate Pro?')) { await deactivatePro(); setFreemiumUI(); } },
-    goToCheckout: () => window.open('https://lhk96l.gumroad.com/l/reflexa-pro', '_blank'),
+    goToCheckout: (plan = 'monthly') => {
+      const urls = {
+        monthly: 'https://lhk96l.lemonsqueezy.com/checkout/buy/545f51da-ba26-4108-9078-6c2f89393522',
+        annual:  'https://lhk96l.lemonsqueezy.com/checkout/buy/8da42570-ca01-4925-a8ee-42652e160ce5',
+      };
+      window.open(urls[plan] || urls.monthly, '_blank');
+    },
     doDownloadPNG, doDownloadCSV, doCopyResult, doShare,
     sendFeedback: () => window.open('mailto:hanodeking15@gmail.com?subject=REFLEXA%20Feedback'),
   };
