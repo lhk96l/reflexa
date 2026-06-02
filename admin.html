@@ -173,29 +173,11 @@ async function generateKey() {
   res.className = 'result show';
   res.innerHTML = '<div style="color:#64748B">Generating...</div>';
 
-  const orderId = `admin-${Date.now()}`;
-  const body = JSON.stringify({
-    data: {
-      id: orderId,
-      attributes: {
-        user_email:   email,
-        product_name: plan === 'pro-annual' ? 'REFLEXA Pro Annual' : plan === 'enterprise' ? 'REFLEXA Enterprise' : 'REFLEXA Pro Monthly',
-        variant_name: plan === 'pro-annual' ? 'Annual' : 'Monthly',
-      }
-    }
-  });
-
-  // حساب HMAC للـ webhook signature
-  const secret = 'RxFlx_LS_Wh00k_S3cr3t_2025!';
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(body));
-  const sigHex = Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
-
   try {
-    const r = await fetch(`${WORKER}/webhook/lemonsqueezy`, {
+    const r = await fetch(`${WORKER}/admin/generate-key`, {
       method:  'POST',
-      headers: { 'Content-Type':'application/json', 'X-Event-Name':'order_created', 'X-Signature': sigHex },
-      body,
+      headers: authHeaders(),
+      body:    JSON.stringify({ email, plan, sendEmail: true }),
     });
     const data = await r.json();
 
@@ -204,9 +186,10 @@ async function generateKey() {
         <div class="ok">Key generated!</div>
         <div class="key-val">${data.key}</div>
         <button class="copy-btn" onclick="navigator.clipboard.writeText('${data.key}');this.textContent='Copied ✓'">Copy Key</button>
-        <div class="meta">Email sent: ${data.emailSent ? 'Yes' : 'No'} · Plan: ${plan} · Order: ${orderId}</div>`;
+        <div class="meta">Email sent: ${data.emailSent ? 'Yes' : 'No'} · Plan: ${plan}</div>`;
     } else {
-      res.innerHTML = `<div class="bad">${JSON.stringify(data)}</div>`;
+      if (r.status === 401) { doLogout(); return; }
+      res.innerHTML = `<div class="bad">${data.reason || JSON.stringify(data)}</div>`;
     }
   } catch(e) {
     res.innerHTML = `<div class="bad">Error: ${e.message}</div>`;

@@ -140,7 +140,7 @@ async function sendLicenseEmail(to, licenseKey, plan, resendApiKey) {
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Event-Name, X-Signature',
 };
 
 function json(data, status = 200) {
@@ -427,7 +427,29 @@ async function requireAdmin(request, env) {
 
 async function handleAdminGenerateKey(request, env) {
   if (!await requireAdmin(request, env)) return json({ ok: false, reason: 'Unauthorized' }, 401);
-  return await handleWebhook(request, env);
+
+  let body;
+  try { body = await request.json(); } catch { return json({ ok: false, reason: 'Bad JSON' }, 400); }
+
+  const email  = (body.email  || '').trim().toLowerCase();
+  const planId = body.plan    || 'pro-monthly';
+  if (!email || !email.includes('@')) return json({ ok: false, reason: 'Invalid email' }, 400);
+
+  const orderId    = `admin-${Date.now()}`;
+  const licenseKey = await generateKey(email, planId, env.RXFLX_SECRET);
+
+  const meta = { email, planId, orderId, createdAt: new Date().toISOString(), used: 0, active: true, adminGenerated: true };
+  await env.LICENSES.put(`key:${licenseKey}`,    JSON.stringify(meta), { expirationTtl: 366 * 86400 });
+  await env.LICENSES.put(`order:${orderId}`,      licenseKey);
+  await env.LICENSES.put(`email:${email}:latest`, licenseKey);
+
+  let emailSent = false;
+  if (body.sendEmail !== false) {
+    const r = await sendLicenseEmail(email, licenseKey, planId, env.RESEND_API_KEY);
+    emailSent = r.ok;
+  }
+
+  return json({ ok: true, key: licenseKey, emailSent });
 }
 
 export default {
