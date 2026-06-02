@@ -1,7 +1,7 @@
-// REFLEXA v3.2 — Service Worker
-// استراتيجية: Network-First للـ JS/HTML، Cache-First للـ Fonts/CDN فقط
+// REFLEXA v3.3 — Service Worker
+// Network-First للـ JS/HTML، Cache-First للـ Fonts/CDN، تحديث فوري
 
-const VERSION = '3.2.0';
+const VERSION = '3.3.0';
 const CACHE   = `reflexa-v${VERSION}`;
 
 const CDN_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'];
@@ -15,23 +15,25 @@ const BYPASS = [
   'lemonsqueezy.com', 'resend.com',
 ];
 
+// INSTALL — تثبيت فوري بدون انتظار
 self.addEventListener('install', e => {
+  self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE).then(c =>
-      c.addAll(['./index.html', './manifest.json'])
-        .catch(() => {})
-    ).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then(c => c.addAll(['./index.html', './manifest.json']).catch(() => {}))
   );
 });
 
+// ACTIVATE — حذف الكاشات القديمة + الاستيلاء الفوري على جميع الـ clients
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
       .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-      .then(() => clients.claim())
+      .then(() => clients.claim()) // يُطبّق على جميع التبويبات المفتوحة فوراً
   );
 });
 
+// FETCH
 self.addEventListener('fetch', e => {
   const req = e.request;
   const url = new URL(req.url);
@@ -39,7 +41,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   if (BYPASS.some(h => url.href.includes(h))) return;
 
-  // CDN (fonts, chart.js) — Cache-First
+  // CDN — Cache-First (ثابتة ونادراً تتغير)
   if (CDN_HOSTS.some(h => url.hostname.includes(h))) {
     e.respondWith(
       caches.match(req).then(cached => cached || fetch(req).then(res => {
@@ -50,14 +52,18 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // كل ملفات التطبيق (HTML, JS, JSON) — Network-First دائماً
-  // يضمن أن المستخدم يحصل على آخر نسخة في كل مرة
+  // كل ملفات التطبيق — Network-First (يضمن آخر نسخة دائماً)
   e.respondWith(
     fetch(req).then(res => {
       if (res.ok) caches.open(CACHE).then(c => c.put(req, res.clone()));
       return res;
     }).catch(() =>
-      caches.match(req).then(cached => cached || caches.match('./index.html'))
+      caches.match(req).then(c => c || caches.match('./index.html'))
     )
   );
+});
+
+// MESSAGE — استقبال أوامر من التطبيق
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });

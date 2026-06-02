@@ -854,9 +854,22 @@ async function init() {
   // IPv6 + Protocol (auto)
   runProtocol();
 
-  // Service Worker
+  // Service Worker — مع كشف التحديثات التلقائي
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    const reg = await navigator.serviceWorker.register('./sw.js').catch(() => null);
+    if (reg) {
+      // كشف تحديث جديد وإعلام المستخدم فوراً
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW?.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            // يوجد تحديث جاهز — أعد التحميل تلقائياً
+            navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+            newSW.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    }
   }
 
   // Online/offline
