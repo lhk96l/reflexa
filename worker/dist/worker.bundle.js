@@ -359,6 +359,77 @@ async function handleActivateToken(request, env) {
   });
 }
 
+// ══ Admin Authentication System ══════════════════════════════════
+// ADMIN_EMAIL + ADMIN_PASSWORD_HASH (SHA-256) set in Cloudflare env
+// JWT session token — 24 hours validity
+
+async function sha256hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', enc(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function createAdminToken(email, secret) {
+  const exp     = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  const payload = `${email}|${exp}`;
+  const sig     = (await hmacHex(payload, secret)).slice(0, 16).toUpperCase();
+  return btoa(payload).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'') + '.' + sig;
+}
+
+async function verifyAdminToken(token, secret) {
+  if (!token) return false;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 2) return false;
+    const payload = atob(parts[0].replace(/-/g,'+').replace(/_/g,'/'));
+    const [email, expStr] = payload.split('|');
+    if (Date.now() > parseInt(expStr)) return false;
+    const expected = (await hmacHex(payload, secret)).slice(0, 16).toUpperCase();
+    return parts[1] === expected;
+  } catch { return false; }
+}
+
+async function handleAdminLogin(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return json({ ok: false }, 400); }
+
+  const email    = (body.email    || '').trim().toLowerCase();
+  const password = (body.password || '').trim();
+  if (!email || !password) return json({ ok: false, reason: 'Missing credentials' }, 400);
+
+  // Rate limit — 5 محاولات كل 15 دقيقة
+  const rlKey = `ratelimit:admin:${email}`;
+  const rl    = await env.LICENSES.get(rlKey);
+  if (rl && parseInt(rl) >= 5) return json({ ok: false, reason: 'Too many attempts. Wait 15 minutes.' }, 429);
+  await env.LICENSES.put(rlKey, String((parseInt(rl)||0)+1), { expirationTtl: 900 });
+
+  // التحقق من الإيميل والباسورد
+  const adminEmail    = env.ADMIN_EMAIL    || '';
+  const adminPassHash = env.ADMIN_PASS_HASH || '';
+  const inputHash     = await sha256hex(password);
+
+  if (email !== adminEmail.toLowerCase() || inputHash !== adminPassHash) {
+    return json({ ok: false, reason: 'Invalid email or password' }, 401);
+  }
+
+  // إزالة rate limit بعد نجاح تسجيل الدخول
+  await env.LICENSES.delete(rlKey);
+
+  const token = await createAdminToken(email, env.RXFLX_SECRET);
+  return json({ ok: true, token });
+}
+
+async function requireAdmin(request, env) {
+  const auth  = request.headers.get('Authorization') || '';
+  const token = auth.replace('Bearer ', '');
+  const valid = await verifyAdminToken(token, env.RXFLX_SECRET);
+  return valid;
+}
+
+async function handleAdminGenerateKey(request, env) {
+  if (!await requireAdmin(request, env)) return json({ ok: false, reason: 'Unauthorized' }, 401);
+  return await handleWebhook(request, env);
+}
+
 export default {
   async fetch(request, env) {
     const url    = new URL(request.url);
@@ -372,7 +443,10 @@ export default {
       if (url.pathname === '/api/resend-key'       && method === 'POST') return await handleResendKey(request, env);
       if (url.pathname === '/api/magic-link'       && method === 'POST') return await handleMagicLink(request, env);
       if (url.pathname === '/api/activate'         && method === 'GET')  return await handleActivateToken(request, env);
-      if (url.pathname === '/api/health'           && method === 'GET')  return json({ status: 'ok', version: '3.1.0', ts: Date.now() });
+      if (url.pathname === '/api/health'           && method === 'GET')  return json({ status: 'ok', version: '3.2.0', ts: Date.now() });
+      // Admin endpoints
+      if (url.pathname === '/admin/login'          && method === 'POST') return await handleAdminLogin(request, env);
+      if (url.pathname === '/admin/generate-key'   && method === 'POST') return await handleAdminGenerateKey(request, env);
       return json({ error: 'Not found' }, 404);
     } catch (err) {
       console.error('[RXFLX Worker]', err);
