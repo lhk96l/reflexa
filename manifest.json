@@ -1,7 +1,7 @@
 {
   "name": "REFLEXA — Advanced Network Diagnostic Tool",
   "short_name": "REFLEXA",
-  "description": "Real-time network speed testing with beautiful analytics. Free, private & offline capable.",
+  "description": "Professional network diagnostic: RFC 6349, ITU-T Y.1541, DNS benchmark, WebRTC leak detection, bufferbloat analysis. 100% private & free.",
   "start_url": "/reflexa/",
   "scope": "/reflexa/",
   "display": "standalone",

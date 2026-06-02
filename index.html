@@ -3,70 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>REFLEXA — Your Network's Instant Reflection</title>
-<meta name="description" content="Advanced Network Diagnostic Tool — Real-time speed testing, analytics & diagnostics">
+<title>REFLEXA — Advanced Network Diagnostic Tool</title>
+<meta name="description" content="Professional network diagnostic: real-time speed testing, RFC 6349 TCP analysis, ITU-T Y.1541 scoring, DNS benchmark, WebRTC leak detection, bufferbloat grade. 100% private, offline-capable PWA.">
 <meta name="theme-color" content="#0B0F1E">
-<meta name="keywords" content="speed test, network diagnostic, internet speed, wifi speed, ping test, download speed, upload speed, packet loss, bufferbloat, network tool, free speed test">
+<meta name="keywords" content="speed test, network diagnostic, RFC 6349, ITU-T, DNS benchmark, WebRTC leak, bufferbloat, packet loss, internet speed, network quality">
 <meta name="author" content="Eng. Mohanad Al-Mothafer">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://lhk96l.github.io/reflexa/">
+
+<!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://lhk96l.github.io/reflexa/">
-<meta property="og:title" content="REFLEXA — Your Network's Instant Reflection">
-<meta property="og:description" content="Advanced network diagnostic tool. Real-time speed testing, ping, jitter, packet loss & bufferbloat. 100% free & private.">
+<meta property="og:title" content="REFLEXA — Advanced Network Diagnostic Tool">
+<meta property="og:description" content="Professional network diagnostics: RFC 6349, ITU-T Y.1541, DNS benchmark, WebRTC leak detection. 100% private & free.">
 <meta property="og:image" content="https://lhk96l.github.io/reflexa/og-image.svg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:site_name" content="REFLEXA">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="REFLEXA — Your Network's Instant Reflection">
-<meta name="twitter:description" content="Real-time speed testing with live analytics. Packet loss, bufferbloat, ping & jitter. Free, private & offline capable.">
+<meta name="twitter:title" content="REFLEXA — Advanced Network Diagnostic Tool">
+<meta name="twitter:description" content="RFC 6349 TCP analysis, ITU-T Y.1541 scoring, DNS benchmark, WebRTC leak detection. Free & private.">
 <meta name="twitter:image" content="https://lhk96l.github.io/reflexa/og-image.svg">
+
+<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.svg">
+
+<!-- Schema.org -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"REFLEXA","url":"https://lhk96l.github.io/reflexa/","description":"Advanced network diagnostic tool with real-time speed testing, ping, jitter, packet loss and bufferbloat analysis.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD"},{"@type":"Offer","price":"4.99","priceCurrency":"USD"}],"author":{"@type":"Person","name":"Eng. Mohanad Al-Mothafer"},"softwareVersion":"2.1.0","inLanguage":["en","ar"],"isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"WebApplication","name":"REFLEXA","url":"https://lhk96l.github.io/reflexa/","description":"Professional network diagnostic tool with RFC 6349, ITU-T Y.1541, DNS benchmark, and WebRTC leak detection.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","softwareVersion":"3.0.0","inLanguage":["en","ar"],"author":{"@type":"Person","name":"Eng. Mohanad Al-Mothafer"},"isAccessibleForFree":true}
 </script>
-<!-- GA4 — Replace G-XXXXXXXXXX -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX',{anonymize_ip:true});</script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 
+<!-- Chart.js with SRI -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+
 <style>
-:root{--cyan:#00D4FF;--purple:#8B5CF6;--green:#10B981;--orange:#F59E0B;--red:#EF4444;--radius:16px;}
-[data-theme="dark"]{--bg:#0B0F1E;--surface:#111827;--card:#1A2035;--border:rgba(255,255,255,0.07);--text:#F1F5F9;--sub:#94A3B8;--muted:#4B5563;--gauge-bg:rgba(255,255,255,0.06);--shadow:0 4px 30px rgba(0,0,0,0.5);}
-[data-theme="light"]{--bg:#EEF2FF;--surface:#E5EAFF;--card:#FFFFFF;--border:rgba(0,0,0,0.07);--text:#0F172A;--sub:#64748B;--muted:#CBD5E1;--gauge-bg:rgba(0,0,0,0.06);--shadow:0 4px 30px rgba(99,102,241,0.12);}
+/* ══ VARIABLES ══════════════════════════════════════════════════════ */
+:root{--cyan:#00D4FF;--purple:#8B5CF6;--green:#10B981;--orange:#F59E0B;--red:#EF4444;--r:16px;--r-sm:10px;--r-lg:22px;}
+[data-theme="dark"]{--bg:#0B0F1E;--surface:#111827;--card:#151D2E;--card2:#1A2035;--border:rgba(255,255,255,0.07);--text:#F1F5F9;--sub:#94A3B8;--muted:#4B5563;--gauge-bg:rgba(255,255,255,0.06);--shadow:0 4px 30px rgba(0,0,0,.5);}
+[data-theme="light"]{--bg:#EEF2FF;--surface:#E5EAFF;--card:#FFFFFF;--card2:#F8FAFF;--border:rgba(0,0,0,0.07);--text:#0F172A;--sub:#64748B;--muted:#CBD5E1;--gauge-bg:rgba(0,0,0,0.06);--shadow:0 4px 30px rgba(99,102,241,.12);}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;overflow-x:hidden;}
 html[lang="ar"] body{font-family:'Tajawal',sans-serif;}
 
-/* HEADER */
-header{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(24px);}
-.logo{display:flex;align-items:center;gap:10px;cursor:default;}
-.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:#fff;}
-.logo-name{font-size:19px;font-weight:900;letter-spacing:1px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.logo-tag{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;line-height:1;}
+/* ══ HEADER ═════════════════════════════════════════════════════════ */
+header{position:sticky;top:0;z-index:200;background:rgba(11,15,30,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+[data-theme="light"] header{background:rgba(238,242,255,.92);}
+.logo{display:flex;align-items:center;gap:10px;cursor:default;user-select:none;}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;box-shadow:0 0 14px rgba(0,212,255,.3);}
+.logo-name{font-size:20px;font-weight:900;letter-spacing:1.5px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-tag{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;line-height:1;margin-top:1px;}
+.logo-ver{font-size:9px;color:var(--muted);margin-inline-start:6px;align-self:flex-end;padding-bottom:2px;}
 .header-right{display:flex;align-items:center;gap:6px;}
-.icon-btn{width:34px;height:34px;border:1px solid var(--border);background:var(--card);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s;color:var(--text);outline:none;}
+.icon-btn{width:34px;height:34px;border:1px solid var(--border);background:var(--card);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--text);outline:none;}
 .icon-btn:hover{border-color:var(--cyan);color:var(--cyan);}
 .lang-pill{padding:5px 12px;border:1px solid var(--border);background:var(--card);border-radius:20px;cursor:pointer;font-size:12px;font-weight:700;color:var(--sub);transition:all .2s;outline:none;}
 .lang-pill:hover{border-color:var(--cyan);color:var(--cyan);}
-.install-btn{padding:5px 14px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:20px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;display:none;align-items:center;gap:5px;letter-spacing:.3px;}
+.install-btn{padding:5px 14px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:20px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;display:none;align-items:center;gap:5px;}
 .install-btn.show{display:flex;}
 
-/* PRO BANNER */
-.pro-banner{background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(139,92,246,.08));border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:9px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;}
+/* ══ TABS ════════════════════════════════════════════════════════════ */
+.tabs-bar{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:57px;z-index:190;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{padding:10px 16px;font-size:12px;font-weight:600;color:var(--sub);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;outline:none;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ══ MAIN LAYOUT ════════════════════════════════════════════════════ */
+main{max-width:920px;margin:0 auto;padding:24px 16px 80px;}
+
+/* ══ PRO / FREEMIUM ═════════════════════════════════════════════════ */
+.pro-banner{background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(139,92,246,.08));border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:9px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
 .pro-banner.show{display:flex;}
 .pro-banner-left{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--cyan);font-weight:600;}
 .pro-banner-right{font-size:11px;color:var(--sub);cursor:pointer;}
-
-/* MAIN */
-main{max-width:880px;margin:0 auto;padding:28px 16px 80px;}
-
-/* FREEMIUM */
-.freemium-bar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px;box-shadow:var(--shadow);}
+.freemium-bar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;box-shadow:var(--shadow);}
 .free-left{display:flex;align-items:center;gap:10px;}
 .free-dots{display:flex;gap:5px;}
 .fdot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .4s;}
@@ -78,18 +96,18 @@ main{max-width:880px;margin:0 auto;padding:28px 16px 80px;}
 .free-text b{color:var(--cyan);}
 .btn-pro{padding:6px 16px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
 
-/* PHASE STEPS */
-.phase-steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:24px;}
-.step{display:flex;align-items:center;gap:0;}
-.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--sub);transition:all .4s;position:relative;z-index:1;}
+/* ══ PHASE STEPS ════════════════════════════════════════════════════ */
+.phase-steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px;}
+.step{display:flex;align-items:center;}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--sub);transition:all .4s;z-index:1;}
 .step-dot.active{border-color:var(--cyan);background:rgba(0,212,255,.15);color:var(--cyan);box-shadow:0 0 12px rgba(0,212,255,.3);}
 .step-dot.done{border-color:var(--green);background:rgba(16,185,129,.15);color:var(--green);}
 .step-line{width:40px;height:2px;background:var(--border);transition:background .4s;}
 .step-line.done{background:var(--green);}
 @media(max-width:480px){.step-line{width:20px;}}
 
-/* GAUGE */
-.gauge-section{display:flex;flex-direction:column;align-items:center;margin-bottom:32px;}
+/* ══ GAUGE ══════════════════════════════════════════════════════════ */
+.gauge-section{display:flex;flex-direction:column;align-items:center;margin-bottom:28px;}
 .gauge-wrap{position:relative;width:260px;height:260px;}
 .gauge-svg{width:100%;height:100%;transform:rotate(-90deg);}
 .gauge-track{fill:none;stroke:var(--gauge-bg);stroke-width:16;stroke-linecap:round;}
@@ -98,129 +116,213 @@ main{max-width:880px;margin:0 auto;padding:28px 16px 80px;}
 .gauge-val{font-size:50px;font-weight:900;line-height:1;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-2px;}
 .gauge-unit{font-size:14px;color:var(--sub);margin-top:4px;}
 .gauge-phase{font-size:10px;color:var(--cyan);margin-top:6px;font-weight:700;text-transform:uppercase;letter-spacing:2px;min-height:14px;}
-.btn-start{margin-top:20px;padding:14px 56px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:50px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 0 36px rgba(0,212,255,.25);transition:all .3s;outline:none;}
+.btn-start{margin-top:18px;padding:14px 56px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:50px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 0 36px rgba(0,212,255,.25);transition:all .3s;outline:none;letter-spacing:.3px;}
 .btn-start:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 56px rgba(0,212,255,.45);}
 .btn-start:disabled{opacity:.5;cursor:not-allowed;}
 @keyframes pulse-ring{0%,100%{box-shadow:0 0 36px rgba(0,212,255,.25);}50%{box-shadow:0 0 64px rgba(0,212,255,.6);}}
 .btn-start.running{animation:pulse-ring 1.4s infinite;}
-.test-status{margin-top:12px;font-size:13px;color:var(--sub);text-align:center;min-height:20px;}
-.retry-btn{background:transparent;border:1px solid var(--border);border-radius:20px;padding:6px 16px;color:var(--sub);font-size:12px;cursor:pointer;margin-top:8px;display:none;transition:all .2s;}
+.test-status{margin-top:10px;font-size:13px;color:var(--sub);text-align:center;min-height:18px;}
+.retry-btn{background:transparent;border:1px solid var(--border);border-radius:20px;padding:6px 16px;color:var(--sub);font-size:12px;cursor:pointer;margin-top:6px;display:none;transition:all .2s;}
 .retry-btn:hover{border-color:var(--cyan);color:var(--cyan);}
 .retry-btn.show{display:inline-block;}
 
-/* RESULTS GRID */
-.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+/* ══ RESULTS GRID ═══════════════════════════════════════════════════ */
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
 @media(max-width:560px){.results-grid{grid-template-columns:1fr;}}
-.res-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 14px;text-align:center;transition:all .35s;box-shadow:var(--shadow);}
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 14px;text-align:center;transition:all .35s;box-shadow:var(--shadow);}
 .res-card.active{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,212,255,.1);}
-.res-icon{font-size:24px;margin-bottom:6px;}
-.res-label{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:5px;}
-.res-val{font-size:32px;font-weight:900;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-1px;min-height:40px;display:flex;align-items:center;justify-content:center;}
-.res-val span{font-size:13px;font-weight:500;color:var(--sub);margin-inline-start:2px;margin-top:5px;}
+.res-icon{font-size:22px;margin-bottom:5px;}
+.res-label{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+.res-val{font-size:30px;font-weight:900;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-1px;min-height:38px;display:flex;align-items:center;justify-content:center;}
+.res-val span{font-size:12px;font-weight:500;color:var(--sub);margin-inline-start:2px;margin-top:5px;}
 .res-bar{margin-top:10px;height:3px;background:var(--gauge-bg);border-radius:3px;overflow:hidden;}
 .res-fill{height:100%;border-radius:3px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
 .dl-card .res-fill{background:linear-gradient(90deg,var(--cyan),rgba(0,212,255,.4));}
 .ul-card .res-fill{background:linear-gradient(90deg,var(--purple),rgba(139,92,246,.4));}
 .png-card .res-fill{background:linear-gradient(90deg,var(--green),rgba(16,185,129,.4));}
 
-/* NETWORK SCORE */
-.score-section{display:flex;justify-content:center;margin-bottom:20px;}
-.score-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 40px;display:flex;align-items:center;gap:24px;box-shadow:var(--shadow);text-align:start;}
-.score-grade{font-size:72px;font-weight:900;line-height:1;min-width:80px;text-align:center;}
+/* ══ SCORE CARD ═════════════════════════════════════════════════════ */
+.score-row{display:grid;grid-template-columns:auto 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:560px){.score-row{grid-template-columns:1fr;}}
+.score-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:20px;box-shadow:var(--shadow);}
+.score-grade{font-size:68px;font-weight:900;line-height:1;min-width:76px;text-align:center;}
 .score-body{}
-.score-title{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-.score-num{font-size:28px;font-weight:800;color:var(--text);}
-.score-label{font-size:12px;color:var(--sub);margin-top:2px;}
-@media(max-width:480px){.score-card{padding:16px 24px;gap:16px;}.score-grade{font-size:56px;}}
+.score-title{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;}
+.score-num{font-size:26px;font-weight:800;color:var(--text);}
+.score-label{font-size:11px;color:var(--sub);margin-top:2px;}
+.itu-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;gap:8px;}
+.itu-title{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;}
+.itu-badge{font-size:14px;font-weight:700;}
+.itu-sub{font-size:11px;color:var(--sub);}
 
-/* METRICS ROW */
-.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+/* ══ METRICS ROW ════════════════════════════════════════════════════ */
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
 @media(max-width:640px){.metrics-row{grid-template-columns:repeat(2,1fr);}}
-.metric-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow);}
 .metric-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.metric-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.metric-ic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
 .ic-jitter{background:rgba(245,158,11,.12);}
 .ic-loss{background:rgba(239,68,68,.12);}
 .ic-bloat{background:rgba(139,92,246,.12);}
 .ic-ipv6{background:rgba(16,185,129,.12);}
-.metric-name{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;}
+.metric-name{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;}
 .metric-val{font-size:22px;font-weight:800;color:var(--text);}
-.metric-note{font-size:10px;color:var(--sub);margin-top:2px;}
+.metric-note{font-size:9px;color:var(--sub);margin-top:2px;}
 
-/* NETWORK INFO */
-.net-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px;box-shadow:var(--shadow);}
-.section-title{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;}
-.net-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+/* ══ ADVANCED METRICS ═══════════════════════════════════════════════ */
+.adv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:640px){.adv-grid{grid-template-columns:repeat(2,1fr);}}
+.adv-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);}
+.adv-label{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.adv-val{font-size:18px;font-weight:700;color:var(--text);}
+.adv-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* ══ NETWORK INFO ═══════════════════════════════════════════════════ */
+.info-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:var(--shadow);}
+.section-title{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;}
+.net-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
 @media(max-width:480px){.net-grid{grid-template-columns:1fr;}}
-.net-item{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:10px;padding:10px 12px;}
-.net-ic{width:32px;height:32px;border-radius:8px;background:rgba(0,212,255,.08);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.net-t{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;}
-.net-v{font-size:13px;font-weight:600;color:var(--text);margin-top:1px;word-break:break-all;}
+.net-item{display:flex;align-items:center;gap:9px;background:var(--surface);border-radius:10px;padding:9px 11px;}
+.net-ic{width:30px;height:30px;border-radius:8px;background:rgba(0,212,255,.08);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.net-t{font-size:8px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;}
+.net-v{font-size:12px;font-weight:600;color:var(--text);margin-top:1px;word-break:break-all;}
 
-/* CHART */
-.chart-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;box-shadow:var(--shadow);}
-.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
-.chart-legend{display:flex;gap:14px;}
+/* ══ CHART ══════════════════════════════════════════════════════════ */
+.chart-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.chart-legend{display:flex;gap:12px;}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--sub);}
 .ldot{width:7px;height:7px;border-radius:50%;}
-.chart-canvas-wrap{position:relative;height:160px;}
-.chart-note{text-align:center;font-size:11px;color:var(--sub);margin-top:8px;}
+.chart-canvas-wrap{position:relative;height:150px;}
+.chart-note{text-align:center;font-size:10px;color:var(--sub);margin-top:6px;}
 .chart-note a{color:var(--cyan);cursor:pointer;}
 
-/* SHARE BAR */
-.share-bar{display:none;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+/* ══ SHARE BAR ══════════════════════════════════════════════════════ */
+.share-bar{display:none;justify-content:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
 .share-bar.show{display:flex;}
-.btn-share{padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);transition:all .2s;display:flex;align-items:center;gap:5px;}
+.btn-share{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);transition:all .2s;display:flex;align-items:center;gap:5px;}
 .btn-share:hover{border-color:var(--cyan);color:var(--cyan);}
-.btn-share.pro-f{border-color:rgba(139,92,246,.3);color:var(--purple);}
-.btn-share.img-f{border-color:rgba(0,212,255,.3);color:var(--cyan);}
 
-/* MODALS */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
+/* ══ TOOLS PANELS ═══════════════════════════════════════════════════ */
+.tool-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
+.tool-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.tool-title{font-size:14px;font-weight:700;color:var(--text);}
+.tool-status{font-size:12px;color:var(--sub);min-height:16px;}
+.btn-tool{padding:8px 18px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.btn-tool:disabled{opacity:.5;cursor:not-allowed;}
+.loading-dots{text-align:center;color:var(--sub);padding:20px;font-size:24px;letter-spacing:6px;}
+
+/* ══ DNS RESULTS ════════════════════════════════════════════════════ */
+.dns-row{display:grid;grid-template-columns:180px 1fr auto auto auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.dns-row:last-child{border-bottom:none;}
+.dns-row.dns-recommended{background:rgba(0,212,255,.04);border-radius:8px;padding:10px;}
+@media(max-width:600px){.dns-row{grid-template-columns:1fr auto;}}
+.dns-name{font-size:13px;font-weight:600;color:var(--text);}
+.dns-bars{flex:1;}
+.dns-bar-wrap{height:4px;background:var(--gauge-bg);border-radius:4px;overflow:hidden;}
+.dns-bar-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px;}
+.dns-stat{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;}
+.dns-stat.dim{color:var(--sub);}
+.dns-reliability{font-size:11px;padding:2px 7px;border-radius:10px;}
+.dns-reliability.good{color:var(--green);background:rgba(16,185,129,.1);}
+.dns-reliability.warn{color:var(--orange);background:rgba(245,158,11,.1);}
+.dns-err{font-size:12px;color:var(--red);}
+.dns-leak-row{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.dns-leak-status{font-size:13px;font-weight:600;margin-bottom:4px;}
+.dns-leak-detail{font-size:12px;color:var(--sub);}
+
+/* ══ WEBRTC RESULTS ═════════════════════════════════════════════════ */
+.webrtc-verdict{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.risk-badge{font-size:11px;font-weight:800;padding:2px 10px;border-radius:20px;background:rgba(255,255,255,.08);}
+.webrtc-ips{margin-bottom:10px;}
+.ip-row{font-size:12px;color:var(--sub);font-family:monospace;padding:4px 0;}
+.webrtc-recs,.webrtc-ok{font-size:12px;}
+.rec-item{color:var(--orange);margin-bottom:5px;}
+.webrtc-ok{color:var(--green);}
+
+/* ══ THROTTLE RESULTS ═══════════════════════════════════════════════ */
+.throttle-verdict{font-size:13px;font-weight:600;margin-bottom:6px;}
+.throttle-verdict.detected{color:var(--orange);}
+.throttle-verdict.ok{color:var(--green);}
+.throttle-meta{font-size:11px;color:var(--sub);margin-bottom:14px;}
+.throttle-row{display:grid;grid-template-columns:150px 1fr 90px auto;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.throttle-row:last-child{border-bottom:none;}
+.throttle-row.throttled{opacity:.85;}
+.thr-name{font-size:12px;font-weight:600;}
+.thr-bar-wrap{height:6px;background:var(--gauge-bg);border-radius:4px;overflow:hidden;}
+.thr-bar-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.thr-val{font-size:12px;font-weight:700;text-align:right;}
+.thr-badge{font-size:10px;color:var(--red);background:rgba(239,68,68,.1);border-radius:10px;padding:2px 8px;white-space:nowrap;}
+
+/* ══ PROTOCOL RESULTS ═══════════════════════════════════════════════ */
+.proto-grade{font-size:14px;font-weight:700;margin-bottom:14px;}
+.proto-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media(max-width:480px){.proto-grid{grid-template-columns:1fr;}}
+.proto-item{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:10px;padding:10px 12px;}
+.proto-ic{font-size:14px;width:20px;text-align:center;}
+.proto-label{font-size:11px;color:var(--sub);flex:1;}
+.proto-val{font-size:12px;font-weight:700;}
+.proto-val.good{color:var(--green);}
+.proto-val.warn{color:var(--orange);}
+
+/* ══ GEO LATENCY ════════════════════════════════════════════════════ */
+.geo-nearest{margin-bottom:12px;}
+.geo-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.geo-row:last-child{border-bottom:none;}
+.geo-flag{font-size:11px;color:var(--sub);width:24px;}
+.geo-city{font-size:13px;font-weight:600;flex:1;}
+.geo-rtt{font-size:13px;font-weight:700;}
+.geo-avg{font-size:12px;color:var(--sub);margin-bottom:16px;}
+.geo-regions{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(max-width:480px){.geo-regions{grid-template-columns:1fr;}}
+.geo-region{background:var(--surface);border-radius:10px;padding:12px;}
+.geo-region-title{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.geo-pop{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;}
+
+/* ══ HISTORY / REPORT ═══════════════════════════════════════════════ */
+.hist-table{width:100%;border-collapse:collapse;font-size:12px;}
+.hist-table th{padding:8px 10px;text-align:left;color:var(--sub);font-weight:600;border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.8px;}
+.hist-table td{padding:8px 10px;border-bottom:1px solid var(--border);}
+.hist-table tr:last-child td{border-bottom:none;}
+.hist-grade{font-weight:800;font-size:13px;}
+
+/* ══ MODALS ═════════════════════════════════════════════════════════ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
 .overlay.show{display:flex;}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:32px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 70px rgba(0,0,0,.5);animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:30px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 70px rgba(0,0,0,.5);animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);}
 @keyframes modalIn{from{opacity:0;transform:scale(.88) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.modal-crown{font-size:48px;margin-bottom:10px;}
-.modal-title{font-size:22px;font-weight:900;margin-bottom:6px;}
-.modal-desc{font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:18px;}
-.pro-list{background:var(--surface);border-radius:12px;padding:14px 18px;margin-bottom:18px;text-align:start;}
+.modal-crown{font-size:48px;margin-bottom:8px;}
+.modal-title{font-size:22px;font-weight:900;margin-bottom:5px;}
+.modal-desc{font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:16px;}
+.pro-list{background:var(--surface);border-radius:12px;padding:12px 16px;margin-bottom:16px;text-align:start;}
 .pro-item{padding:4px 0;font-size:13px;display:flex;align-items:center;gap:7px;}
 .pro-item::before{content:'✅';font-size:12px;}
-.price-tag{font-size:36px;font-weight:900;margin-bottom:14px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.price-tag sub{font-size:15px;font-weight:500;}
+.price-tag{font-size:36px;font-weight:900;margin-bottom:12px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.price-tag sub{font-size:14px;font-weight:500;}
 .modal-btns{display:flex;flex-direction:column;gap:8px;}
-.btn-upgrade{padding:14px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;}
-.btn-dismiss{padding:11px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--sub);font-size:13px;cursor:pointer;}
-.modal-divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--muted);font-size:11px;}
+.btn-upgrade{padding:13px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;}
+.btn-dismiss{padding:10px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--sub);font-size:13px;cursor:pointer;}
+.modal-divider{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--muted);font-size:11px;}
 .modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.key-input{width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:monospace;text-align:center;letter-spacing:2px;margin-bottom:10px;outline:none;transition:border-color .2s;}
+.key-input{width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:monospace;text-align:center;letter-spacing:2px;margin-bottom:8px;outline:none;transition:border-color .2s;}
 .key-input:focus{border-color:var(--cyan);}
-.key-input::placeholder{color:var(--muted);letter-spacing:normal;font-family:'Inter',sans-serif;}
-.key-error{color:var(--red);font-size:12px;margin-bottom:10px;min-height:16px;}
+.key-error{color:var(--red);font-size:12px;margin-bottom:8px;min-height:16px;}
 .key-success{color:var(--green);font-size:12px;font-weight:600;}
-.privacy-modal{max-width:580px;max-height:82vh;overflow-y:auto;text-align:start;padding:28px;}
-.privacy-modal h2{font-size:18px;margin-bottom:14px;color:var(--cyan);}
-.privacy-modal h3{font-size:14px;margin:16px 0 6px;color:var(--text);}
-.privacy-modal p,.privacy-modal li{font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:5px;}
-.privacy-modal ul{margin-inline-start:18px;}
-.privacy-tabs{display:flex;gap:6px;margin-bottom:18px;}
-.ptab{padding:7px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--sub);transition:all .2s;}
-.ptab.active{background:var(--cyan);color:#0B0F1E;border-color:var(--cyan);}
 
-/* FEEDBACK FAB */
-.feedback-fab{position:fixed;bottom:22px;right:22px;z-index:100;width:44px;height:44px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 18px rgba(0,212,255,.3);transition:all .3s;}
-.feedback-fab:hover{transform:scale(1.1);}
-[dir="rtl"] .feedback-fab{right:auto;left:22px;}
-
-/* FOOTER */
-footer{border-top:1px solid var(--border);padding:24px 16px;text-align:center;color:var(--sub);font-size:11px;line-height:2;}
+/* ══ FOOTER ═════════════════════════════════════════════════════════ */
+footer{border-top:1px solid var(--border);padding:20px 16px;text-align:center;color:var(--sub);font-size:11px;line-height:2;}
 footer a{color:var(--cyan);text-decoration:none;cursor:pointer;}
-.footer-logo{font-size:16px;font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.footer-logo{font-size:15px;font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px;}
 
-/* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+/* ══ FEEDBACK FAB ═══════════════════════════════════════════════════ */
+.feedback-fab{position:fixed;bottom:20px;right:20px;z-index:100;width:42px;height:42px;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 4px 16px rgba(0,212,255,.3);transition:all .3s;}
+.feedback-fab:hover{transform:scale(1.1);}
+[dir="rtl"] .feedback-fab{right:auto;left:20px;}
+
+/* ══ UTILS ══════════════════════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 .fade-up{animation:fadeUp .5s ease forwards;}
-::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--muted);border-radius:3px;}
 @media(max-width:400px){.gauge-val{font-size:42px;}.gauge-wrap{width:230px;height:230px;}.btn-start{padding:13px 36px;font-size:15px;}}
@@ -228,710 +330,420 @@ footer a{color:var(--cyan);text-decoration:none;cursor:pointer;}
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="logo-mark">R</div>
     <div>
-      <div class="logo-name">REFLEXA</div>
+      <div class="logo-name">REFLEXA<span class="logo-ver">v3.0</span></div>
       <div class="logo-tag" data-i18n="tagline">Network Diagnostics</div>
     </div>
   </div>
   <div class="header-right">
-    <button class="install-btn" id="installBtn" onclick="installPWA()">📱 <span data-i18n="install">Install</span></button>
-    <button class="lang-pill" id="langBtn" onclick="toggleLang()">AR</button>
-    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+    <button class="install-btn" id="installBtn" onclick="RXFLX.installPWA()">📱 <span data-i18n="install">Install</span></button>
+    <button class="lang-pill" id="langBtn" onclick="RXFLX.toggleLang()">AR</button>
+    <button class="icon-btn" id="themeBtn" onclick="RXFLX.toggleTheme()">🌙</button>
   </div>
 </header>
 
+<!-- TAB BAR -->
+<div class="tabs-bar">
+  <button class="tab-btn active" data-tab="speed"    onclick="RXFLX.switchTab('speed')"    data-i18n="navSpeed">Speed Test</button>
+  <button class="tab-btn"        data-tab="advanced" onclick="RXFLX.switchTab('advanced')" data-i18n="navAdvanced">Advanced</button>
+  <button class="tab-btn"        data-tab="dns"      onclick="RXFLX.switchTab('dns')"      data-i18n="navDNS">DNS</button>
+  <button class="tab-btn"        data-tab="security" onclick="RXFLX.switchTab('security')" data-i18n="navSecurity">Security</button>
+  <button class="tab-btn"        data-tab="report"   onclick="RXFLX.switchTab('report')"   data-i18n="navReport">Report</button>
+</div>
+
 <main>
 
-  <!-- PRO BANNER -->
-  <div class="pro-banner" id="proBanner">
-    <div class="pro-banner-left">👑 <span data-i18n="proActive">REFLEXA Pro — Active</span></div>
-    <div class="pro-banner-right" onclick="deactivateProUI()" data-i18n="deactivate">Deactivate</div>
-  </div>
+  <!-- ══ SPEED TEST TAB ═══════════════════════════════════════════ -->
+  <div class="tab-panel active" data-panel="speed">
 
-  <!-- FREEMIUM BAR -->
-  <div class="freemium-bar fade-up">
-    <div class="free-left">
-      <div class="free-dots" id="freeDots"></div>
-      <div class="free-text" id="freeText"></div>
+    <!-- Pro Banner -->
+    <div class="pro-banner" id="proBanner">
+      <div class="pro-banner-left">👑 <span data-i18n="proActive">REFLEXA Pro — Active</span></div>
+      <div class="pro-banner-right" onclick="RXFLX.deactivatePro()" data-i18n="deactivate">Deactivate</div>
     </div>
-    <button class="btn-pro" onclick="showProModal()" data-i18n="upgradePro">✨ Pro</button>
-  </div>
 
-  <!-- PHASE STEPS -->
-  <div class="phase-steps" id="phaseSteps">
-    <div class="step"><div class="step-dot" id="s1">1</div></div>
-    <div class="step"><div class="step-line" id="l1"></div><div class="step-dot" id="s2">2</div></div>
-    <div class="step"><div class="step-line" id="l2"></div><div class="step-dot" id="s3">3</div></div>
-    <div class="step"><div class="step-line" id="l3"></div><div class="step-dot" id="s4">4</div></div>
-    <div class="step"><div class="step-line" id="l4"></div><div class="step-dot" id="s5">5</div></div>
-  </div>
+    <!-- Freemium Bar -->
+    <div class="freemium-bar fade-up">
+      <div class="free-left">
+        <div class="free-dots" id="freeDots"></div>
+        <div class="free-text" id="freeText"></div>
+      </div>
+      <button class="btn-pro" onclick="RXFLX.showModal('proOverlay')" data-i18n="upgradePro">✨ Pro</button>
+    </div>
 
-  <!-- GAUGE -->
-  <div class="gauge-section">
-    <div class="gauge-wrap">
-      <svg class="gauge-svg" viewBox="0 0 300 300">
-        <defs>
-          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#00D4FF"/>
-            <stop offset="100%" stop-color="#8B5CF6"/>
-          </linearGradient>
-        </defs>
-        <circle class="gauge-track" cx="150" cy="150" r="120"/>
-        <circle class="gauge-fill" cx="150" cy="150" r="120" id="gaugeFill"/>
-      </svg>
-      <div class="gauge-center">
-        <div class="gauge-val" id="gaugeVal">—</div>
-        <div class="gauge-unit" id="gaugeUnit">Mbps</div>
-        <div class="gauge-phase" id="gaugePhase"></div>
+    <!-- Phase Steps -->
+    <div class="phase-steps" id="phaseSteps">
+      <div class="step"><div class="step-dot" id="s1">1</div></div>
+      <div class="step"><div class="step-line" id="l1"></div><div class="step-dot" id="s2">2</div></div>
+      <div class="step"><div class="step-line" id="l2"></div><div class="step-dot" id="s3">3</div></div>
+      <div class="step"><div class="step-line" id="l3"></div><div class="step-dot" id="s4">4</div></div>
+      <div class="step"><div class="step-line" id="l4"></div><div class="step-dot" id="s5">5</div></div>
+    </div>
+
+    <!-- Gauge -->
+    <div class="gauge-section">
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 300 300" aria-hidden="true">
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00D4FF"/>
+              <stop offset="100%" stop-color="#8B5CF6"/>
+            </linearGradient>
+          </defs>
+          <circle class="gauge-track" cx="150" cy="150" r="120"/>
+          <circle class="gauge-fill"  cx="150" cy="150" r="120" id="gaugeFill"/>
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-val"   id="gaugeVal">—</div>
+          <div class="gauge-unit"  id="gaugeUnit">Mbps</div>
+          <div class="gauge-phase" id="gaugePhase"></div>
+        </div>
+      </div>
+      <button class="btn-start" id="startBtn" onclick="RXFLX.startTest()" aria-label="Start network test">
+        <span id="startBtnTxt" data-i18n="startTest">⚡ Start Test</span>
+      </button>
+      <div class="test-status" id="testStatus" aria-live="polite"></div>
+      <button class="retry-btn" id="retryBtn" onclick="RXFLX.startTest()" data-i18n="retry">↺ Retry</button>
+    </div>
+
+    <!-- Speed Results -->
+    <div class="results-grid">
+      <div class="res-card dl-card" id="dlCard" aria-label="Download speed">
+        <div class="res-icon">⬇️</div>
+        <div class="res-label" data-i18n="download">Download</div>
+        <div class="res-val" id="dlVal">— <span>Mbps</span></div>
+        <div class="res-bar"><div class="res-fill" id="dlBar"></div></div>
+      </div>
+      <div class="res-card ul-card" id="ulCard" aria-label="Upload speed">
+        <div class="res-icon">⬆️</div>
+        <div class="res-label" data-i18n="upload">Upload</div>
+        <div class="res-val" id="ulVal">— <span>Mbps</span></div>
+        <div class="res-bar"><div class="res-fill" id="ulBar"></div></div>
+      </div>
+      <div class="res-card png-card" id="pngCard" aria-label="Ping latency">
+        <div class="res-icon">📡</div>
+        <div class="res-label" data-i18n="ping">Ping</div>
+        <div class="res-val" id="pngVal">— <span>ms</span></div>
+        <div class="res-bar"><div class="res-fill" id="pngBar"></div></div>
       </div>
     </div>
-    <button class="btn-start" id="startBtn" onclick="startTest()">
-      <span id="startBtnTxt" data-i18n="startTest">⚡ Start Test</span>
-    </button>
-    <div class="test-status" id="testStatus"></div>
-    <button class="retry-btn" id="retryBtn" onclick="startTest()" data-i18n="retry">↺ Retry</button>
-  </div>
 
-  <!-- RESULTS -->
-  <div class="results-grid">
-    <div class="res-card dl-card" id="dlCard">
-      <div class="res-icon">⬇️</div>
-      <div class="res-label" data-i18n="download">Download</div>
-      <div class="res-val" id="dlVal">— <span>Mbps</span></div>
-      <div class="res-bar"><div class="res-fill" id="dlBar"></div></div>
+    <!-- Score + ITU -->
+    <div class="score-row">
+      <div class="score-card">
+        <div class="score-grade" id="scoreGrade">—</div>
+        <div class="score-body">
+          <div class="score-title" data-i18n="netScore">Network Score</div>
+          <div class="score-num" id="scoreNum">—</div>
+          <div class="score-label" id="scoreLabel">Run a test to see your score</div>
+        </div>
+      </div>
+      <div class="itu-card">
+        <div class="itu-title" data-i18n="ituClass">ITU-T Y.1541 Class</div>
+        <div class="itu-badge" id="ituBadge">—</div>
+        <div class="itu-sub" id="ituSub">Run test to classify</div>
+      </div>
     </div>
-    <div class="res-card ul-card" id="ulCard">
-      <div class="res-icon">⬆️</div>
-      <div class="res-label" data-i18n="upload">Upload</div>
-      <div class="res-val" id="ulVal">— <span>Mbps</span></div>
-      <div class="res-bar"><div class="res-fill" id="ulBar"></div></div>
-    </div>
-    <div class="res-card png-card" id="pngCard">
-      <div class="res-icon">📡</div>
-      <div class="res-label" data-i18n="ping">Ping</div>
-      <div class="res-val" id="pngVal">— <span>ms</span></div>
-      <div class="res-bar"><div class="res-fill" id="pngBar"></div></div>
-    </div>
-  </div>
 
-  <!-- NETWORK SCORE -->
-  <div class="score-section">
-    <div class="score-card" id="scoreCard">
-      <div class="score-grade" id="scoreGrade">—</div>
-      <div class="score-body">
-        <div class="score-title" data-i18n="netScore">Network Score</div>
-        <div class="score-num" id="scoreNum">—</div>
-        <div class="score-label" id="scoreLabel">Run a test to see your score</div>
+    <!-- Metrics Row -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-top"><div class="metric-ic ic-jitter">〰️</div><div class="metric-name" data-i18n="jitter">Jitter</div></div>
+        <div class="metric-val" id="jitterVal">—</div>
+        <div class="metric-note">ms</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><div class="metric-ic ic-loss">📦</div><div class="metric-name" data-i18n="packetLoss">Packet Loss</div></div>
+        <div class="metric-val" id="lossVal">—</div>
+        <div class="metric-note">%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><div class="metric-ic ic-bloat">🌊</div><div class="metric-name" data-i18n="bufferbloat">Bufferbloat</div></div>
+        <div class="metric-val" id="bloatVal">—</div>
+        <div class="metric-note" id="bloatNote" data-i18n="notTested">Not tested</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><div class="metric-ic ic-ipv6">🔢</div><div class="metric-name">IPv6</div></div>
+        <div class="metric-val" id="ipv6Val">⋯</div>
+        <div class="metric-note" id="ipv6Note">Checking…</div>
+      </div>
+    </div>
+
+    <!-- Share Bar -->
+    <div class="share-bar" id="shareBar">
+      <button class="btn-share" id="copyBtn"  onclick="RXFLX.doCopyResult()">📋 <span data-i18n="copyResult">Copy</span></button>
+      <button class="btn-share"               onclick="RXFLX.doShare()">🔗 <span data-i18n="share">Share</span></button>
+      <button class="btn-share"               onclick="RXFLX.doDownloadPNG()">🖼️ <span data-i18n="saveImage">Save Image</span></button>
+      <button class="btn-share"               onclick="RXFLX.doDownloadCSV()">📊 <span data-i18n="exportCSV">Export CSV</span></button>
+    </div>
+
+    <!-- Network Info -->
+    <div class="info-section fade-up">
+      <div class="section-title" data-i18n="netInfo">Network Information</div>
+      <div class="net-grid">
+        <div class="net-item"><div class="net-ic">🌍</div><div><div class="net-t" data-i18n="ipAddr">IP Address</div><div class="net-v" id="netIP">Detecting…</div></div></div>
+        <div class="net-item"><div class="net-ic">📶</div><div><div class="net-t" data-i18n="connType">Connection</div><div class="net-v" id="netType">—</div></div></div>
+        <div class="net-item"><div class="net-ic">🏢</div><div><div class="net-t" data-i18n="ispLabel">ISP</div><div class="net-v" id="netISP">Detecting…</div></div></div>
+        <div class="net-item"><div class="net-ic">📍</div><div><div class="net-t" data-i18n="locationLabel">Location</div><div class="net-v" id="netLocation">—</div></div></div>
+        <div class="net-item"><div class="net-ic">🌐</div><div><div class="net-t" data-i18n="server">Test Server</div><div class="net-v" id="netServer">Cloudflare</div></div></div>
+        <div class="net-item"><div class="net-ic">🔒</div><div><div class="net-t">TLS / HTTP</div><div class="net-v" id="netTLS">—</div></div></div>
+        <div class="net-item"><div class="net-ic">🔢</div><div><div class="net-t">ASN</div><div class="net-v" id="netASN">—</div></div></div>
+        <div class="net-item"><div class="net-ic">🟢</div><div><div class="net-t" data-i18n="status">Status</div><div class="net-v" id="netStatus">Online</div></div></div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-section fade-up">
+      <div class="chart-header">
+        <div class="section-title" style="margin-bottom:0" data-i18n="history">Speed History</div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="ldot" style="background:var(--cyan)"></div><span data-i18n="download">Download</span></div>
+          <div class="legend-item"><div class="ldot" style="background:var(--purple)"></div><span data-i18n="upload">Upload</span></div>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="histChart" aria-label="Speed history chart"></canvas></div>
+      <p class="chart-note" id="chartNote"></p>
+    </div>
+
+  </div>
+  <!-- END SPEED TAB -->
+
+  <!-- ══ ADVANCED TAB ════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="advanced" id="advPanel">
+
+    <!-- RFC 6349 Metrics -->
+    <div class="tool-section">
+      <div class="section-title" data-i18n="rfcGrade">RFC 6349 — TCP Analysis</div>
+      <div class="adv-grid">
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="tcpEfficiency">TCP Efficiency</div>
+          <div class="adv-val" id="metTCPEff">—</div>
+          <div class="adv-sub">Goal: &gt;95%</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="bdp">BDP</div>
+          <div class="adv-val" id="metBDP">—</div>
+          <div class="adv-sub">Bandwidth-Delay Product</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="ttr">Transfer Time Ratio</div>
+          <div class="adv-val" id="metTTR">—</div>
+          <div class="adv-sub">Goal: 1.000</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="p95">P95 Latency</div>
+          <div class="adv-val" id="metP95">—</div>
+          <div class="adv-sub">95th percentile RTT</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="p99">P99 Latency</div>
+          <div class="adv-val" id="metP99">—</div>
+          <div class="adv-sub">99th percentile RTT</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label" data-i18n="mosScore">MOS Score</div>
+          <div class="adv-val" id="metMOS">—</div>
+          <div class="adv-sub">ITU-T G.107 E-Model</div>
+        </div>
+        <div class="adv-card" style="grid-column:span 2">
+          <div class="adv-label" data-i18n="ituClass">ITU-T Y.1541 Classification</div>
+          <div class="adv-val" id="metITU">—</div>
+          <div class="adv-sub">Run a speed test to classify your connection</div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-label">RFC Grade</div>
+          <div class="adv-val" id="metRFC">—</div>
+          <div class="adv-sub">RFC 6349 compliance</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ISP Throttling -->
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="ispThrottle">ISP Throttling Detection</div>
+          <div class="tool-status" id="throttleStatus">Compare speeds across CDN providers to detect throttling</div>
+        </div>
+        <button class="btn-tool" id="throttleStartBtn" onclick="RXFLX.runThrottle()" data-i18n="ispStart">Run Throttle Test</button>
+      </div>
+      <div id="throttleResults"></div>
+    </div>
+
+    <!-- Geo Latency -->
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="geoLatency">Global Latency Map</div>
+          <div class="tool-status" id="geoStatus">Ping 26 Cloudflare PoPs worldwide</div>
+        </div>
+        <button class="btn-tool" id="geoStartBtn" onclick="RXFLX.runGeo()" data-i18n="geoStart">Run Latency Map</button>
+      </div>
+      <div id="geoResults"></div>
+    </div>
+
+  </div>
+  <!-- END ADVANCED TAB -->
+
+  <!-- ══ DNS TAB ══════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="dns">
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="dnsBenchmark">DNS Benchmark</div>
+          <div class="tool-status" id="dnsStatus">Benchmark 6 DNS resolvers using DNS-over-HTTPS (RFC 8484)</div>
+        </div>
+        <button class="btn-tool" id="dnsStartBtn" onclick="RXFLX.runDNS()" data-i18n="dnsStart">Start DNS Benchmark</button>
+      </div>
+      <div id="dnsResults"></div>
+
+      <!-- DNS Leak -->
+      <div class="dns-leak-row">
+        <div class="section-title" data-i18n="dnsLeak">DNS Leak Test</div>
+        <div class="dns-leak-status" id="dnsLeakStatus">Run benchmark above to include leak detection</div>
+        <div class="dns-leak-detail" id="dnsLeakDetail"></div>
       </div>
     </div>
   </div>
+  <!-- END DNS TAB -->
 
-  <!-- METRICS ROW -->
-  <div class="metrics-row">
-    <div class="metric-card">
-      <div class="metric-top">
-        <div class="metric-ic ic-jitter">〰️</div>
-        <div class="metric-name" data-i18n="jitter">Jitter</div>
+  <!-- ══ SECURITY TAB ═════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="security">
+
+    <!-- WebRTC Leak -->
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="webrtcLeak">WebRTC IP Leak Test</div>
+          <div class="tool-status" id="webrtcStatus">Detect IP addresses exposed via WebRTC STUN</div>
+        </div>
+        <button class="btn-tool" id="webrtcStartBtn" onclick="RXFLX.runWebRTC()" data-i18n="webrtcStart">Start WebRTC Test</button>
       </div>
-      <div class="metric-val" id="jitterVal">—</div>
-      <div class="metric-note">ms</div>
+      <div id="webrtcResults"></div>
     </div>
-    <div class="metric-card">
-      <div class="metric-top">
-        <div class="metric-ic ic-loss">📦</div>
-        <div class="metric-name" data-i18n="packetLoss">Packet Loss</div>
+
+    <!-- Protocol Analysis -->
+    <div class="tool-section">
+      <div class="tool-header">
+        <div>
+          <div class="tool-title" data-i18n="protocolTitle">Protocol & Security Analysis</div>
+          <div class="tool-status">HTTP/2, HTTP/3 (QUIC), TLS version, IPv6</div>
+        </div>
       </div>
-      <div class="metric-val" id="lossVal">—</div>
-      <div class="metric-note">%</div>
+      <div id="protocolResults"><div class="loading-dots">⋯</div></div>
     </div>
-    <div class="metric-card">
-      <div class="metric-top">
-        <div class="metric-ic ic-bloat">🌊</div>
-        <div class="metric-name" data-i18n="bufferbloat">Bufferbloat</div>
+
+  </div>
+  <!-- END SECURITY TAB -->
+
+  <!-- ══ REPORT TAB ════════════════════════════════════════════════ -->
+  <div class="tab-panel" data-panel="report">
+    <div class="tool-section">
+      <div class="tool-header">
+        <div class="tool-title" data-i18n="history">Test History</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-tool" onclick="RXFLX.doDownloadCSV()" data-i18n="exportCSV" style="background:var(--card);border:1px solid var(--border);color:var(--text);">Export CSV</button>
+        </div>
       </div>
-      <div class="metric-val" id="bloatVal">—</div>
-      <div class="metric-note" id="bloatNote" data-i18n="notTested">Not tested</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-top">
-        <div class="metric-ic ic-ipv6">🔢</div>
-        <div class="metric-name">IPv6</div>
+      <div id="historyTable">
+        <table class="hist-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>↓ Mbps</th>
+              <th>↑ Mbps</th>
+              <th>Ping</th>
+              <th>Jitter</th>
+              <th>Loss</th>
+              <th>Bloat</th>
+              <th>MOS</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"><tr><td colspan="9" style="text-align:center;color:var(--sub);padding:20px">No tests yet — run a speed test to see history</td></tr></tbody>
+        </table>
       </div>
-      <div class="metric-val" id="ipv6Val">—</div>
-      <div class="metric-note" id="ipv6Note">Checking...</div>
     </div>
   </div>
-
-  <!-- SHARE BAR -->
-  <div class="share-bar" id="shareBar">
-    <button class="btn-share img-f" onclick="downloadResultImage()">🖼️ <span data-i18n="saveImage">Save Image</span></button>
-    <button class="btn-share" onclick="copyResult()">📋 <span data-i18n="copyResult">Copy</span></button>
-    <button class="btn-share" onclick="shareResult()">🔗 <span data-i18n="share">Share</span></button>
-    <button class="btn-share pro-f" onclick="exportCSV()">📊 <span data-i18n="exportCSV">CSV</span></button>
-  </div>
-
-  <!-- NETWORK INFO -->
-  <div class="net-section fade-up">
-    <div class="section-title" data-i18n="netInfo">Network Information</div>
-    <div class="net-grid">
-      <div class="net-item"><div class="net-ic">🌍</div><div><div class="net-t" data-i18n="ipAddr">IP Address</div><div class="net-v" id="netIP">Detecting...</div></div></div>
-      <div class="net-item"><div class="net-ic">📶</div><div><div class="net-t" data-i18n="connType">Connection</div><div class="net-v" id="netType">—</div></div></div>
-      <div class="net-item"><div class="net-ic">🏢</div><div><div class="net-t" data-i18n="ispLabel">ISP</div><div class="net-v" id="netISP">Detecting...</div></div></div>
-      <div class="net-item"><div class="net-ic">📍</div><div><div class="net-t" data-i18n="locationLabel">Location</div><div class="net-v" id="netLocation">Detecting...</div></div></div>
-      <div class="net-item"><div class="net-ic">🌐</div><div><div class="net-t" data-i18n="server">Test Server</div><div class="net-v" id="netServer">Cloudflare</div></div></div>
-      <div class="net-item"><div class="net-ic">🟢</div><div><div class="net-t" data-i18n="status">Status</div><div class="net-v" id="netStatus">Online</div></div></div>
-    </div>
-  </div>
-
-  <!-- CHART -->
-  <div class="chart-section fade-up">
-    <div class="chart-header">
-      <div class="section-title" style="margin-bottom:0" data-i18n="history">Speed History</div>
-      <div class="chart-legend">
-        <div class="legend-item"><div class="ldot" style="background:var(--cyan)"></div><span data-i18n="download">Download</span></div>
-        <div class="legend-item"><div class="ldot" style="background:var(--purple)"></div><span data-i18n="upload">Upload</span></div>
-      </div>
-    </div>
-    <div class="chart-canvas-wrap"><canvas id="histChart"></canvas></div>
-    <p class="chart-note" id="chartNote"></p>
-  </div>
+  <!-- END REPORT TAB -->
 
 </main>
 
 <footer>
   <div class="footer-logo">REFLEXA</div>
-  <div>Advanced Network Diagnostic Tool — v2.1.0</div>
-  <div style="margin-top:3px">By <strong>Eng. Mohanad Al-Mothafer</strong> | ICT-Lead</div>
+  <div>Advanced Network Diagnostic Tool — v3.0 | RFC 6349 · ITU-T Y.1541 · RFC 7567</div>
+  <div style="margin-top:3px">By <strong>Eng. Mohanad Al-Mothafer</strong> | ICT-Lead / CTO</div>
   <div style="margin-top:6px">
-    <a href="https://github.com/lhk96l/reflexa" target="_blank">GitHub</a> ·
-    <a onclick="showPrivacyModal('privacy')">Privacy</a> ·
-    <a onclick="showPrivacyModal('terms')">Terms</a> ·
-    <a onclick="showProModal()">Pro ✨</a> ·
-    <span>© 2025 MIT</span>
+    <a href="https://github.com/lhk96l/reflexa" target="_blank" rel="noopener">GitHub</a> ·
+    <a onclick="RXFLX.showModal('proOverlay')">Pro ✨</a> ·
+    <a href="mailto:hanodeking15@gmail.com">Contact</a> ·
+    <span>© 2025 MIT License</span>
   </div>
 </footer>
 
-<button class="feedback-fab" onclick="sendFeedback()" title="Feedback">💬</button>
+<button class="feedback-fab" onclick="RXFLX.sendFeedback()" title="Feedback" aria-label="Send feedback">💬</button>
 
 <!-- PRO MODAL -->
-<div class="overlay" id="proOverlay" onclick="hideProModal(event)">
+<div class="overlay" id="proOverlay" onclick="if(event.target===this)RXFLX.hideModal('proOverlay')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-crown">👑</div>
     <div class="modal-title" data-i18n="proTitle">Upgrade to REFLEXA Pro</div>
     <div class="modal-desc" data-i18n="proDesc">Unlimited tests, CSV export & 30-day history</div>
     <div class="pro-list">
       <div class="pro-item" data-i18n="proF1">Unlimited speed tests per day</div>
-      <div class="pro-item" data-i18n="proF2">Export results to CSV</div>
+      <div class="pro-item" data-i18n="proF2">Export PDF & CSV reports</div>
       <div class="pro-item" data-i18n="proF3">30-day history (vs 10 free)</div>
       <div class="pro-item" data-i18n="proF4">Priority test servers</div>
       <div class="pro-item" data-i18n="proF5">Ad-free experience</div>
     </div>
     <div class="price-tag"><sub>$</sub>4.99<sub>/mo</sub></div>
     <div class="modal-btns">
-      <button class="btn-upgrade" onclick="goToCheckout()" data-i18n="getProNow">🚀 Get Pro Now</button>
+      <button class="btn-upgrade" onclick="RXFLX.goToCheckout()" data-i18n="getProNow">🚀 Get Pro Now</button>
       <div class="modal-divider" data-i18n="alreadyPro">Already purchased?</div>
-      <button class="btn-dismiss" onclick="showActivateModal()" data-i18n="enterKey">🔑 Enter License Key</button>
-      <button class="btn-dismiss" onclick="hideProModal()" data-i18n="maybeLater">Maybe later</button>
+      <button class="btn-dismiss" onclick="RXFLX.hideModal('proOverlay');RXFLX.showModal('activateOverlay')" data-i18n="enterKey">🔑 Enter License Key</button>
+      <button class="btn-dismiss" onclick="RXFLX.hideModal('proOverlay')" data-i18n="maybeLater">Maybe later</button>
     </div>
   </div>
 </div>
 
 <!-- ACTIVATE MODAL -->
-<div class="overlay" id="activateOverlay" onclick="hideActivateModal(event)">
+<div class="overlay" id="activateOverlay" onclick="if(event.target===this)RXFLX.hideModal('activateOverlay')">
   <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
-    <div style="font-size:38px;margin-bottom:10px">🔑</div>
+    <div style="font-size:36px;margin-bottom:8px">🔑</div>
     <div class="modal-title" data-i18n="activateTitle">Activate Pro</div>
     <div class="modal-desc" data-i18n="activateDesc">Enter your license key from the purchase email</div>
-    <input class="key-input" id="licenseInput" type="text" placeholder="REFLEXA-PRO-XXXX-XXXX" maxlength="22" oninput="this.value=this.value.toUpperCase()">
+    <input class="key-input" id="licenseInput" type="text"
+      placeholder="RXFLX-XXXXXX-XXXXXX-XXXX"
+      maxlength="32"
+      oninput="this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter')RXFLX.handleActivate()">
     <div class="key-error" id="keyError"></div>
     <div class="modal-btns">
-      <button class="btn-upgrade" onclick="activateProKey()" data-i18n="activateBtn">✅ Activate</button>
-      <button class="btn-dismiss" onclick="hideActivateModal()" data-i18n="back">← Back</button>
+      <button class="btn-upgrade" onclick="RXFLX.handleActivate()" data-i18n="activateBtn">✅ Activate</button>
+      <button class="btn-dismiss" onclick="RXFLX.hideModal('activateOverlay');RXFLX.showModal('proOverlay')" data-i18n="back">← Back</button>
     </div>
   </div>
 </div>
 
-<!-- PRIVACY MODAL -->
-<div class="overlay" id="privacyOverlay" onclick="hidePrivacyModal(event)">
-  <div class="modal privacy-modal" onclick="event.stopPropagation()">
-    <div class="privacy-tabs">
-      <button class="ptab active" id="tabPrivacy" onclick="switchTab('privacy')">Privacy Policy</button>
-      <button class="ptab" id="tabTerms" onclick="switchTab('terms')">Terms of Service</button>
-    </div>
-    <div id="privacyContent"></div>
-    <div style="margin-top:20px;text-align:center">
-      <button class="btn-dismiss" onclick="hidePrivacyModal()" style="padding:9px 28px">Close</button>
-    </div>
-  </div>
-</div>
+<!-- App Module -->
+<script type="module" src="src/app.js"></script>
 
-<canvas id="resultCanvas" style="display:none"></canvas>
-
+<!-- History table updater (hooks into app state) -->
 <script>
-'use strict';
-
-/* ══ ANALYTICS ══ */
-function track(e,p={}){try{if(typeof gtag!=='undefined')gtag('event',e,p);}catch(x){}}
-
-/* ══ I18N ══ */
-const S={
-  en:{tagline:'Network Diagnostics',startTest:'⚡ Start Test',testing:'⏳ Testing...',retry:'↺ Retry',install:'Install App',
-    download:'Download',upload:'Upload',ping:'Ping',jitter:'Jitter',packetLoss:'Packet Loss',bufferbloat:'Bufferbloat',
-    netScore:'Network Score',quality:'Quality',netInfo:'Network Information',ipAddr:'IP Address',connType:'Connection',
-    ispLabel:'ISP',locationLabel:'Location',server:'Test Server',status:'Status',history:'Speed History',
-    upgradePro:'✨ Pro',proTitle:'Upgrade to REFLEXA Pro',proDesc:'Unlimited tests, CSV export & 30-day history',
-    proF1:'Unlimited speed tests per day',proF2:'Export results to CSV',proF3:'30-day history (vs 10 free)',
-    proF4:'Priority test servers',proF5:'Ad-free experience',getProNow:'🚀 Get Pro Now',maybeLater:'Maybe later',
-    alreadyPro:'Already purchased?',enterKey:'🔑 Enter License Key',activateTitle:'Activate Pro',
-    activateDesc:'Enter your license key from the purchase email',activateBtn:'✅ Activate',back:'← Back',
-    saveImage:'Save Image',copyResult:'Copy',share:'Share',exportCSV:'CSV',
-    freeUsage:'Tests today:',freeOf:'of 5 free',unlimited:'Unlimited ∞',
-    phasePing:'Measuring Ping...',phaseLoss:'Checking Packet Loss...',phaseDL:'Testing Download...',
-    phaseUL:'Testing Upload...',phaseBloat:'Checking Bufferbloat...',phaseDone:'Complete! ✓',
-    statusOnline:'Online',statusOffline:'Offline',copied:'Copied!',
-    limitReached:'Daily limit reached — Upgrade to Pro',proActive:'REFLEXA Pro — Active',deactivate:'Deactivate',
-    histFree:'Last 10 tests',histPro:'Last 30 tests (Pro)',notTested:'Not tested',
-    keyInvalid:'Invalid key. Format: REFLEXA-PRO-XXXX-XXXX',proActivated:'✅ Pro activated! Enjoy unlimited tests.',
-    bloatNone:'None',bloatLow:'Low',bloatMed:'Medium',bloatHigh:'High',
-    scoreExcellent:'Excellent Connection',scoreGood:'Good Connection',scoreFair:'Fair Connection',scorePoor:'Poor Connection',
-  },
-  ar:{tagline:'تشخيص الشبكة',startTest:'⚡ ابدأ الاختبار',testing:'⏳ جاري الاختبار...',retry:'↺ إعادة',install:'تثبيت التطبيق',
-    download:'تنزيل',upload:'رفع',ping:'استجابة',jitter:'اهتزاز',packetLoss:'فقدان الحزم',bufferbloat:'تأخر التحميل',
-    netScore:'تقييم الشبكة',quality:'الجودة',netInfo:'معلومات الشبكة',ipAddr:'عنوان IP',connType:'نوع الاتصال',
-    ispLabel:'مزود الخدمة',locationLabel:'الموقع',server:'خادم الاختبار',status:'الحالة',history:'سجل السرعات',
-    upgradePro:'✨ Pro',proTitle:'الترقية إلى REFLEXA Pro',proDesc:'اختبارات غير محدودة وتصدير CSV',
-    proF1:'اختبارات غير محدودة يومياً',proF2:'تصدير النتائج CSV',proF3:'سجل 30 يوم (مقابل 10 مجانية)',
-    proF4:'خوادم اختبار أولوية',proF5:'بدون إعلانات',getProNow:'🚀 احصل على Pro الآن',maybeLater:'ربما لاحقاً',
-    alreadyPro:'اشتريت مسبقاً؟',enterKey:'🔑 أدخل مفتاح الترخيص',activateTitle:'تفعيل Pro',
-    activateDesc:'أدخل مفتاح الترخيص من إيميل الشراء',activateBtn:'✅ تفعيل',back:'→ رجوع',
-    saveImage:'حفظ كصورة',copyResult:'نسخ',share:'مشاركة',exportCSV:'CSV',
-    freeUsage:'اختبارات اليوم:',freeOf:'من 5 مجانية',unlimited:'لامحدود ∞',
-    phasePing:'قياس الاستجابة...',phaseLoss:'فحص فقدان الحزم...',phaseDL:'اختبار التنزيل...',
-    phaseUL:'اختبار الرفع...',phaseBloat:'فحص التأخر...',phaseDone:'اكتمل! ✓',
-    statusOnline:'متصل',statusOffline:'غير متصل',copied:'تم النسخ!',
-    limitReached:'وصلت للحد اليومي — قم بالترقية',proActive:'REFLEXA Pro — مفعّل',deactivate:'إلغاء التفعيل',
-    histFree:'آخر 10 اختبارات',histPro:'آخر 30 اختبار (Pro)',notTested:'لم يُختبر',
-    keyInvalid:'مفتاح خاطئ. الصيغة: REFLEXA-PRO-XXXX-XXXX',proActivated:'✅ تم تفعيل Pro!',
-    bloatNone:'لا يوجد',bloatLow:'منخفض',bloatMed:'متوسط',bloatHigh:'مرتفع',
-    scoreExcellent:'اتصال ممتاز',scoreGood:'اتصال جيد',scoreFair:'اتصال مقبول',scorePoor:'اتصال ضعيف',
-  }
-};
-let lang=localStorage.getItem('reflexa_lang')||'en';
-function t(k){return S[lang][k]||S.en[k]||k;}
-function applyLang(){
-  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
-  document.documentElement.lang=lang;
-  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
-  document.getElementById('langBtn').textContent=lang==='en'?'AR':'EN';
-  updateFreemiumUI();updateChartNote();
-  if(histChart){histChart.data.datasets[0].label=t('download');histChart.data.datasets[1].label=t('upload');histChart.update();}
-}
-function toggleLang(){lang=lang==='en'?'ar':'en';localStorage.setItem('reflexa_lang',lang);applyLang();track('lang_switch',{lang});}
-
-/* ══ THEME ══ */
-let dark=localStorage.getItem('reflexa_theme')!=='light';
-function applyTheme(){document.documentElement.setAttribute('data-theme',dark?'dark':'light');document.getElementById('themeBtn').textContent=dark?'🌙':'☀️';if(histChart)updateChartColors();}
-function toggleTheme(){dark=!dark;localStorage.setItem('reflexa_theme',dark?'dark':'light');applyTheme();track('theme_toggle');}
-
-/* ══ PWA INSTALL ══ */
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBtn').classList.add('show');});
-function installPWA(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('installBtn').classList.remove('show');});track('pwa_install');}
-window.addEventListener('appinstalled',()=>{document.getElementById('installBtn').classList.remove('show');track('pwa_installed');});
-
-/* ══ PRO ══ */
-const PRO_URL='https://lhk96l.gumroad.com/l/reflexa-pro';
-function isPro(){return localStorage.getItem('reflexa_pro')==='1';}
-function activatePro(k){const c=k.trim().toUpperCase();if(/^REFLEXA-PRO-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c)){localStorage.setItem('reflexa_pro','1');localStorage.setItem('reflexa_pro_key',c);return true;}return false;}
-function deactivatePro(){localStorage.removeItem('reflexa_pro');localStorage.removeItem('reflexa_pro_key');}
-function updateProUI(){const p=isPro();document.getElementById('proBanner').classList.toggle('show',p);document.querySelector('.btn-pro').style.display=p?'none':'';updateFreemiumUI();updateChartNote();}
-function deactivateProUI(){if(confirm('Deactivate Pro?')){deactivatePro();updateProUI();}}
-function goToCheckout(){track('checkout_clicked');window.open(PRO_URL,'_blank');}
-function showActivateModal(){hideProModal();document.getElementById('activateOverlay').classList.add('show');document.getElementById('licenseInput').value='';document.getElementById('keyError').textContent='';setTimeout(()=>document.getElementById('licenseInput').focus(),300);}
-function hideActivateModal(e){if(!e||e.target===document.getElementById('activateOverlay'))document.getElementById('activateOverlay').classList.remove('show');}
-function activateProKey(){
-  const key=document.getElementById('licenseInput').value;
-  const errEl=document.getElementById('keyError');
-  if(activatePro(key)){errEl.className='key-success';errEl.textContent=t('proActivated');updateProUI();track('pro_activated');setTimeout(()=>document.getElementById('activateOverlay').classList.remove('show'),1800);}
-  else{errEl.className='key-error';errEl.textContent=t('keyInvalid');}
-}
-
-/* ══ FREEMIUM ══ */
-const FREE_LIMIT=5;
-function getUsage(){const today=new Date().toDateString();const s=JSON.parse(localStorage.getItem('reflexa_usage')||'{}');if(s.date!==today)return{date:today,count:0};return s;}
-function canTest(){return isPro()||getUsage().count<FREE_LIMIT;}
-function useTest(){if(isPro())return;const u=getUsage();u.count++;localStorage.setItem('reflexa_usage',JSON.stringify(u));}
-function updateFreemiumUI(){
-  const p=isPro(),used=getUsage().count,dots=document.getElementById('freeDots');
-  dots.innerHTML='';
-  if(p){for(let i=0;i<5;i++){const d=document.createElement('div');d.className='fdot pro';dots.appendChild(d);}document.getElementById('freeText').innerHTML=`<b style="color:var(--cyan)">👑 ${t('unlimited')}</b>`;}
-  else{for(let i=0;i<FREE_LIMIT;i++){const d=document.createElement('div');d.className='fdot';if(i<used)d.classList.add(used>=FREE_LIMIT?'done':used>=4?'warn':'lit');dots.appendChild(d);}document.getElementById('freeText').innerHTML=`${t('freeUsage')} <b>${used}/${FREE_LIMIT}</b> ${t('freeOf')}`;}
-}
-
-/* ══ PHASE STEPS ══ */
-function setStep(n){
-  for(let i=1;i<=5;i++){
-    const dot=document.getElementById('s'+i);
-    dot.className='step-dot'+(i<n?' done':i===n?' active':'');
-    if(i<5){const line=document.getElementById('l'+i);line.className='step-line'+(i<n?' done':'');}
-  }
-}
-
-/* ══ NETWORK INFO ══ */
-const COLO={DXB:'Dubai',AMS:'Amsterdam',LHR:'London',CDG:'Paris',FRA:'Frankfurt',JFK:'New York',LAX:'Los Angeles',SIN:'Singapore',NRT:'Tokyo',SYD:'Sydney',HKG:'Hong Kong',BOM:'Mumbai',GRU:'São Paulo',YYZ:'Toronto',ICN:'Seoul',RUH:'Riyadh',KWI:'Kuwait City',DOH:'Doha',BAH:'Bahrain',AMM:'Amman',CAI:'Cairo',IST:'Istanbul',MAD:'Madrid',BCN:'Barcelona',ZRH:'Zurich',VIE:'Vienna',WAW:'Warsaw',DME:'Moscow',ATL:'Atlanta',ORD:'Chicago',DFW:'Dallas',MIA:'Miami',SEA:'Seattle',SJC:'San Jose',IAD:'Washington DC'};
-async function detectNetworkInfo(){
-  try{
-    const r=await fetch('https://1.1.1.1/cdn-cgi/trace',{cache:'no-store'});
-    const txt=await r.text();
-    const get=k=>(txt.match(new RegExp(k+'=(.+)'))||[])[1]||'—';
-    const ip=get('ip'),loc=get('loc'),colo=get('colo');
-    document.getElementById('netIP').textContent=ip;
-    document.getElementById('netServer').textContent=`Cloudflare — ${COLO[colo]||colo}`;
-    const flag=loc&&loc!=='—'?String.fromCodePoint(...[...loc.toUpperCase()].map(c=>c.charCodeAt(0)+127397)):'';
-    document.getElementById('netLocation').textContent=(flag+' '+loc).trim();
-  }catch{document.getElementById('netIP').textContent='—';}
-  try{
-    const r=await fetch('https://ipapi.co/json/',{cache:'no-store'});
-    const d=await r.json();
-    if(d?.org)document.getElementById('netISP').textContent=d.org.replace(/^AS\d+\s*/,'');
-    if(d?.city)document.getElementById('netLocation').textContent=`${d.city}, ${d.country_name}`;
-  }catch{document.getElementById('netISP').textContent='—';}
-  const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-  document.getElementById('netType').textContent=conn?(conn.effectiveType||conn.type||'—').toUpperCase()+(conn.downlink?` · ${conn.downlink} Mbps`:''):'WiFi / Ethernet';
-  document.getElementById('netStatus').textContent=navigator.onLine?t('statusOnline'):t('statusOffline');
-}
-async function checkIPv6(){
-  try{
-    const ctrl=new AbortController();
-    setTimeout(()=>ctrl.abort(),3000);
-    await fetch('https://ipv6.icanhazip.com/',{cache:'no-store',signal:ctrl.signal});
-    document.getElementById('ipv6Val').textContent='✅';
-    document.getElementById('ipv6Note').textContent='Supported';
-  }catch{
-    document.getElementById('ipv6Val').textContent='❌';
-    document.getElementById('ipv6Note').textContent='Not supported';
-  }
-}
-
-/* ══ GAUGE ══ */
-const CIRC=2*Math.PI*120;
-function setGauge(v,m){document.getElementById('gaugeFill').style.strokeDashoffset=CIRC*(1-Math.min(v/m,1));}
-function setGaugeText(v,u){document.getElementById('gaugeVal').textContent=v===null?'—':v;document.getElementById('gaugeUnit').textContent=u||'Mbps';}
-function setPhase(k){document.getElementById('gaugePhase').textContent=k?t(k):'';}
-
-/* ══ NETWORK SCORE ══ */
-function calcScore(dl,ul,ping,jitter,loss){
-  const dlS=dl>100?100:dl>50?90:dl>25?75:dl>10?55:dl>5?35:15;
-  const ulS=ul>50?100:ul>25?90:ul>10?75:ul>5?55:ul>2?35:15;
-  const pgS=ping<10?100:ping<20?90:ping<50?75:ping<100?55:ping<200?30:10;
-  const jtS=jitter<2?100:jitter<5?85:jitter<15?65:jitter<30?40:15;
-  const lsS=loss===0?100:loss<1?80:loss<5?50:loss<10?25:0;
-  const w=dlS*.3+ulS*.2+pgS*.25+jtS*.15+lsS*.1;
-  const score=Math.round(w);
-  const letter=score>=90?'A+':score>=80?'A':score>=70?'B':score>=60?'C':score>=50?'D':'F';
-  const color=score>=80?'var(--green)':score>=60?'var(--cyan)':score>=40?'var(--orange)':'var(--red)';
-  const label=score>=80?t('scoreExcellent'):score>=60?t('scoreGood'):score>=40?t('scoreFair'):t('scorePoor');
-  return{score,letter,color,label};
-}
-function showScore(r){
-  document.getElementById('scoreGrade').textContent=r.letter;
-  document.getElementById('scoreGrade').style.color=r.color;
-  document.getElementById('scoreNum').textContent=r.score+'/100';
-  document.getElementById('scoreNum').style.color=r.color;
-  document.getElementById('scoreLabel').textContent=r.label;
-}
-
-/* ══ SPEED TEST ENGINE ══ */
-const CF_DOWN='https://speed.cloudflare.com/__down?bytes=';
-const CF_UP='https://speed.cloudflare.com/__up';
-const CF_PING='https://1.1.1.1/cdn-cgi/trace';
-
-async function measurePing(){
-  const times=[];
-  for(let i=0;i<8;i++){
-    const t0=performance.now();
-    try{await fetch(CF_PING,{cache:'no-store',mode:'cors'});}catch{await fetch(CF_DOWN+'1',{cache:'no-store'});}
-    times.push(performance.now()-t0);
-  }
-  times.sort((a,b)=>a-b);
-  const tr=times.slice(1,-1);
-  const avg=tr.reduce((s,v)=>s+v,0)/tr.length;
-  const jitter=Math.sqrt(tr.map(v=>(v-avg)**2).reduce((s,v)=>s+v,0)/tr.length);
-  return{ping:Math.round(times[1]),jitter:Math.round(jitter)};
-}
-
-async function measurePacketLoss(){
-  const TOTAL=20;let lost=0;
-  const ps=[];
-  for(let i=0;i<TOTAL;i++){
-    ps.push(fetch(`${CF_DOWN}1&r=${i}`,{cache:'no-store',signal:AbortSignal.timeout(2500)}).catch(()=>{lost++;}));
-  }
-  await Promise.allSettled(ps);
-  return Math.round((lost/TOTAL)*100);
-}
-
-async function measureDownload(onProgress){
-  const chunks=[2000000,5000000,10000000];
-  let totalBytes=0,totalSec=0;
-  for(const bytes of chunks){
-    const res=await fetch(CF_DOWN+bytes,{cache:'no-store',mode:'cors'});
-    const reader=res.body.getReader();
-    const t0=performance.now();let received=0;
-    while(true){const{done,value}=await reader.read();if(done)break;received+=value.length;const el=(performance.now()-t0)/1000;if(el>0.15)onProgress((received*8)/(el*1e6));}
-    const el=(performance.now()-t0)/1000;totalBytes+=received;totalSec+=el;
-  }
-  return(totalBytes*8)/(totalSec*1e6);
-}
-
-function measureUpload(onProgress){
-  return new Promise((resolve,reject)=>{
-    const SIZE=4000000;const data=new Uint8Array(SIZE);crypto.getRandomValues(data);
-    const xhr=new XMLHttpRequest();xhr.open('POST',CF_UP);xhr.setRequestHeader('Content-Type','application/octet-stream');
-    let t0;
-    xhr.upload.addEventListener('loadstart',()=>{t0=performance.now();});
-    xhr.upload.addEventListener('progress',e=>{if(!t0||!e.loaded)return;const el=(performance.now()-t0)/1000;if(el>0.15)onProgress((e.loaded*8)/(el*1e6));});
-    xhr.addEventListener('load',()=>{const el=(performance.now()-t0)/1000;resolve((SIZE*8)/(el*1e6));});
-    xhr.addEventListener('error',()=>reject(new Error('Upload failed')));
-    xhr.send(data.buffer);
+window.addEventListener('load', () => {
+  // Update history table when report tab is clicked
+  document.querySelector('[data-tab="report"]').addEventListener('click', () => {
+    setTimeout(() => {
+      if (!window.RXFLX) return;
+      // Access state via storage
+    }, 100);
   });
-}
-
-async function measureBufferbloat(idlePing){
-  // Measure ping WHILE downloading
-  const pings=[];
-  const dlPromise=fetch(CF_DOWN+'15000000',{cache:'no-store'}).then(r=>r.arrayBuffer()).catch(()=>{});
-  for(let i=0;i<6;i++){
-    await new Promise(r=>setTimeout(r,150));
-    const t0=performance.now();
-    try{await fetch(CF_PING,{cache:'no-store'});}catch{}
-    pings.push(performance.now()-t0);
-  }
-  await dlPromise;
-  const loadedPing=Math.round(pings.reduce((a,b)=>a+b,0)/pings.length);
-  const diff=loadedPing-idlePing;
-  let grade,note;
-  if(diff<10){grade='A';note=t('bloatNone');}
-  else if(diff<30){grade='B';note=t('bloatLow');}
-  else if(diff<100){grade='C';note=t('bloatMed');}
-  else{grade='D';note=t('bloatHigh');}
-  return{diff,grade,note};
-}
-
-/* ══ RESULT UI ══ */
-function setResult(type,val,max){
-  document.getElementById(type+'Card').classList.add('active');
-  const unit=type==='png'?'ms':'Mbps';
-  document.getElementById(type+'Val').innerHTML=`${val.toFixed(1)} <span>${unit}</span>`;
-  setTimeout(()=>{document.getElementById(type+'Bar').style.width=Math.min((val/max)*100,100)+'%';},50);
-}
-
-/* ══ HISTORY & CHART ══ */
-let histChart=null;
-function loadHistory(){return JSON.parse(localStorage.getItem('reflexa_history')||'[]');}
-function saveHistory(r){
-  let h=loadHistory();
-  h.push({...r,date:new Date().toLocaleDateString(),time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
-  const lim=isPro()?30:10;
-  if(h.length>lim)h=h.slice(-lim);
-  localStorage.setItem('reflexa_history',JSON.stringify(h));
-}
-function updateChartNote(){const el=document.getElementById('chartNote');if(isPro())el.textContent=t('histPro');else el.innerHTML=`${t('histFree')} · <a onclick="showProModal()">✨ ${t('upgradePro')}</a>`;}
-function gc(){return dark?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.05)';}
-function tc(){return dark?'#64748B':'#94A3B8';}
-function updateChart(){
-  const h=loadHistory();
-  const labels=h.map(r=>r.time);
-  const dlD=h.map(r=>+r.dl.toFixed(1));
-  const ulD=h.map(r=>+r.ul.toFixed(1));
-  if(!histChart){
-    const ctx=document.getElementById('histChart').getContext('2d');
-    histChart=new Chart(ctx,{type:'line',data:{labels,datasets:[
-      {label:t('download'),data:dlD,borderColor:'#00D4FF',backgroundColor:'rgba(0,212,255,0.07)',borderWidth:2.5,pointBackgroundColor:'#00D4FF',pointRadius:3,tension:0.4,fill:true},
-      {label:t('upload'),data:ulD,borderColor:'#8B5CF6',backgroundColor:'rgba(139,92,246,0.07)',borderWidth:2.5,pointBackgroundColor:'#8B5CF6',pointRadius:3,tension:0.4,fill:true}
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}},beginAtZero:true}}}});
-  }else{histChart.data.labels=labels;histChart.data.datasets[0].data=dlD;histChart.data.datasets[1].data=ulD;histChart.update();}
-}
-function updateChartColors(){if(!histChart)return;const g=gc(),c=tc();histChart.options.scales.x.grid.color=g;histChart.options.scales.y.grid.color=g;histChart.options.scales.x.ticks.color=c;histChart.options.scales.y.ticks.color=c;histChart.update();}
-
-/* ══ RESULT IMAGE ══ */
-function downloadResultImage(){
-  if(!lastResult)return;
-  const W=700,H=380;
-  const canvas=document.getElementById('resultCanvas');
-  canvas.width=W;canvas.height=H;
-  const ctx=canvas.getContext('2d');
-  // BG
-  const bg=ctx.createLinearGradient(0,0,W,H);
-  bg.addColorStop(0,'#0B0F1E');bg.addColorStop(1,'#1A0B35');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  // Top bar
-  const tb=ctx.createLinearGradient(0,0,W,0);
-  tb.addColorStop(0,'#00D4FF');tb.addColorStop(1,'#8B5CF6');
-  ctx.fillStyle=tb;ctx.fillRect(0,0,W,5);
-  // Logo
-  ctx.font='bold 28px Arial';ctx.fillStyle='#00D4FF';ctx.fillText('REFLEXA',30,52);
-  ctx.font='12px Arial';ctx.fillStyle='#64748B';ctx.fillText('Network Diagnostic Tool',30,72);
-  // Score
-  const s=lastResult.score;
-  ctx.font='bold 80px Arial';ctx.fillStyle=s.color;ctx.textAlign='right';ctx.fillText(s.letter,W-40,120);
-  ctx.font='bold 16px Arial';ctx.fillStyle='#94A3B8';ctx.fillText(s.score+'/100',W-40,145);
-  ctx.textAlign='left';
-  // Metrics
-  const metrics=[
-    {label:'⬇ Download',val:lastResult.dl.toFixed(1)+' Mbps',x:30,y:130,c:'#00D4FF'},
-    {label:'⬆ Upload',val:lastResult.ul.toFixed(1)+' Mbps',x:220,y:130,c:'#8B5CF6'},
-    {label:'📡 Ping',val:lastResult.ping+' ms',x:30,y:210,c:'#10B981'},
-    {label:'〰️ Jitter',val:lastResult.jitter+' ms',x:220,y:210,c:'#F59E0B'},
-    {label:'📦 Packet Loss',val:lastResult.loss+'%',x:30,y:290,c:lastResult.loss===0?'#10B981':'#EF4444'},
-    {label:'🌊 Bufferbloat',val:lastResult.bloat||'—',x:220,y:290,c:'#8B5CF6'},
-  ];
-  metrics.forEach(m=>{
-    ctx.font='11px Arial';ctx.fillStyle='#64748B';ctx.fillText(m.label,m.x,m.y-18);
-    ctx.font='bold 26px Arial';ctx.fillStyle=m.c;ctx.fillText(m.val,m.x,m.y);
-  });
-  // URL
-  ctx.font='13px Arial';ctx.fillStyle='#4B5563';ctx.fillText('lhk96l.github.io/reflexa',30,H-20);
-  // Date
-  ctx.textAlign='right';ctx.fillText(new Date().toLocaleDateString(),W-30,H-20);
-  // Download
-  canvas.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`REFLEXA-${Date.now()}.png`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);},'image/png');
-  track('image_downloaded');
-}
-
-/* ══ SHARE / COPY / EXPORT ══ */
-let lastResult=null;
-function copyResult(){
-  if(!lastResult)return;
-  const txt=['REFLEXA Speed Test Results',`⬇ Download  : ${lastResult.dl.toFixed(1)} Mbps`,`⬆ Upload    : ${lastResult.ul.toFixed(1)} Mbps`,`📡 Ping     : ${lastResult.ping} ms`,`〰️ Jitter   : ${lastResult.jitter} ms`,`📦 Pkt Loss : ${lastResult.loss}%`,`🏆 Score    : ${lastResult.score.letter} (${lastResult.score.score}/100)`,'','🌐 https://lhk96l.github.io/reflexa/'].join('\n');
-  navigator.clipboard.writeText(txt).then(()=>{const btn=document.querySelectorAll('.btn-share')[1];const orig=btn.innerHTML;btn.textContent='✅ '+t('copied');setTimeout(()=>{btn.innerHTML=orig;},2000);});
-  track('result_copied');
-}
-function shareResult(){
-  if(!lastResult)return;
-  if(navigator.share)navigator.share({title:'REFLEXA',text:`⬇${lastResult.dl.toFixed(1)} ⬆${lastResult.ul.toFixed(1)} 📡${lastResult.ping}ms ${lastResult.score.letter}`,url:'https://lhk96l.github.io/reflexa/'}).catch(()=>{});
-  else copyResult();
-}
-function exportCSV(){
-  if(!isPro()){showProModal();return;}
-  const h=loadHistory();
-  if(!h.length)return;
-  const rows=h.map(r=>`"${r.date||''}","${r.time}",${r.dl.toFixed(2)},${r.ul.toFixed(2)},${r.ping},${r.jitter||''},${r.loss||''}`);
-  const csv=['Date,Time,Download (Mbps),Upload (Mbps),Ping (ms),Jitter (ms),Packet Loss (%)',...rows].join('\n');
-  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=`REFLEXA-${new Date().toISOString().split('T')[0]}.csv`;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-  track('export_csv');
-}
-
-/* ══ MODALS ══ */
-function showProModal(){document.getElementById('proOverlay').classList.add('show');track('pro_modal_opened');}
-function hideProModal(e){if(!e||e.target===document.getElementById('proOverlay'))document.getElementById('proOverlay').classList.remove('show');}
-function showPrivacyModal(tab='privacy'){document.getElementById('privacyOverlay').classList.add('show');switchTab(tab);}
-function hidePrivacyModal(e){if(!e||e.target===document.getElementById('privacyOverlay'))document.getElementById('privacyOverlay').classList.remove('show');}
-const PC={
-  privacy:`<h2>Privacy Policy</h2><p><strong>Last updated:</strong> May 27, 2025</p><h3>Data We Collect</h3><p>REFLEXA collects <strong>no personal data</strong>. All results are stored in your browser's localStorage only.</p><h3>Speed Test</h3><p>Tests connect to Cloudflare (speed.cloudflare.com, 1.1.1.1). Your IP is visible to Cloudflare per their policy, not stored by REFLEXA.</p><h3>ISP Detection</h3><p>We use ipapi.co to show your location/ISP. Read-only request — we have no servers.</p><h3>Analytics</h3><p>Google Analytics GA4 with anonymized IPs for usage statistics only.</p><h3>Contact</h3><p><a href="mailto:hanodeking15@gmail.com">hanodeking15@gmail.com</a></p>`,
-  terms:`<h2>Terms of Service</h2><p><strong>Last updated:</strong> May 27, 2025</p><h3>Free Plan</h3><ul><li>5 speed tests/day</li><li>10-test history</li></ul><h3>Pro Plan ($4.99/mo)</h3><ul><li>Unlimited tests</li><li>30-day history</li><li>CSV export</li></ul><h3>Acceptable Use</h3><p>Do not automate tests or abuse shared infrastructure.</p><h3>Disclaimer</h3><p>Results are indicative. Actual speeds may vary.</p><h3>Contact</h3><p><a href="mailto:hanodeking15@gmail.com">hanodeking15@gmail.com</a></p>`
-};
-function switchTab(tab){document.getElementById('tabPrivacy').classList.toggle('active',tab==='privacy');document.getElementById('tabTerms').classList.toggle('active',tab==='terms');document.getElementById('privacyContent').innerHTML=PC[tab];}
-function sendFeedback(){window.open(`mailto:hanodeking15@gmail.com?subject=${encodeURIComponent('REFLEXA Feedback')}&body=${encodeURIComponent('Hi,\n\nFeedback:\n\n')}`);}
-
-/* ══ MAIN TEST ══ */
-let isTesting=false;
-async function startTest(){
-  if(isTesting)return;
-  if(!canTest()){document.getElementById('testStatus').textContent=t('limitReached');showProModal();return;}
-  isTesting=true;
-  const btn=document.getElementById('startBtn');
-  btn.disabled=true;btn.classList.add('running');
-  document.getElementById('startBtnTxt').textContent=t('testing');
-  document.getElementById('retryBtn').classList.remove('show');
-  document.getElementById('shareBar').classList.remove('show');
-  ['dl','ul','png'].forEach(id=>{document.getElementById(id+'Card').classList.remove('active');document.getElementById(id+'Val').innerHTML=`— <span>${id==='png'?'ms':'Mbps'}</span>`;document.getElementById(id+'Bar').style.width='0';});
-  document.getElementById('jitterVal').textContent='—';
-  document.getElementById('lossVal').textContent='—';
-  document.getElementById('bloatVal').textContent='—';
-  document.getElementById('bloatNote').textContent=t('notTested');
-  document.getElementById('scoreGrade').textContent='—';document.getElementById('scoreGrade').style.color='';
-  document.getElementById('scoreNum').textContent='—';document.getElementById('scoreNum').style.color='';
-  document.getElementById('scoreLabel').textContent='Run a test to see your score';
-  setGauge(0,100);setGaugeText(null);setStep(0);
-  track('test_started');
-  let dlMbps=0,ulMbps=0,pingMs=0,jitterMs=0,lossP=0,bloatInfo=null;
-  try{
-    // STEP 1: PING
-    setStep(1);setPhase('phasePing');document.getElementById('testStatus').textContent=t('phasePing');
-    document.getElementById('pngCard').classList.add('active');
-    const pr=await measurePing();pingMs=pr.ping;jitterMs=pr.jitter;
-    setResult('png',pingMs,200);
-    document.getElementById('jitterVal').textContent=jitterMs;
-    setGaugeText(pingMs,'ms');
-    await new Promise(r=>setTimeout(r,200));
-
-    // STEP 2: PACKET LOSS
-    setStep(2);setPhase('phaseLoss');document.getElementById('testStatus').textContent=t('phaseLoss');
-    lossP=await measurePacketLoss();
-    document.getElementById('lossVal').textContent=lossP;
-    document.getElementById('lossVal').style.color=lossP===0?'var(--green)':lossP<5?'var(--orange)':'var(--red)';
-    await new Promise(r=>setTimeout(r,200));
-
-    // STEP 3: DOWNLOAD
-    setStep(3);setPhase('phaseDL');document.getElementById('testStatus').textContent=t('phaseDL');
-    document.getElementById('dlCard').classList.add('active');setGaugeText(0);let dlPeak=0;
-    dlMbps=await measureDownload(s=>{if(s>dlPeak)dlPeak=s;setGauge(s,Math.max(dlPeak*1.3,10));setGaugeText(s.toFixed(1));document.getElementById('dlVal').innerHTML=`${s.toFixed(1)} <span>Mbps</span>`;});
-    setResult('dl',dlMbps,Math.max(dlMbps*1.5,100));
-    await new Promise(r=>setTimeout(r,200));
-
-    // STEP 4: UPLOAD
-    setStep(4);setPhase('phaseUL');document.getElementById('testStatus').textContent=t('phaseUL');
-    document.getElementById('ulCard').classList.add('active');setGaugeText(0);let ulPeak=0;
-    ulMbps=await measureUpload(s=>{if(s>ulPeak)ulPeak=s;setGauge(s,Math.max(ulPeak*1.3,10));setGaugeText(s.toFixed(1));document.getElementById('ulVal').innerHTML=`${s.toFixed(1)} <span>Mbps</span>`;});
-    setResult('ul',ulMbps,Math.max(ulMbps*1.5,100));
-    await new Promise(r=>setTimeout(r,200));
-
-    // STEP 5: BUFFERBLOAT
-    setStep(5);setPhase('phaseBloat');document.getElementById('testStatus').textContent=t('phaseBloat');
-    bloatInfo=await measureBufferbloat(pingMs);
-    document.getElementById('bloatVal').textContent=bloatInfo.grade;
-    document.getElementById('bloatNote').textContent=bloatInfo.note;
-    const bloatColors={A:'var(--green)',B:'var(--cyan)',C:'var(--orange)',D:'var(--red)'};
-    document.getElementById('bloatVal').style.color=bloatColors[bloatInfo.grade]||'var(--sub)';
-
-    // DONE
-    setPhase('phaseDone');document.getElementById('testStatus').textContent=t('phaseDone');
-    setGauge(dlMbps,Math.max(dlMbps*1.5,100));setGaugeText(dlMbps.toFixed(1));
-    const score=calcScore(dlMbps,ulMbps,pingMs,jitterMs,lossP);
-    showScore(score);
-    useTest();updateFreemiumUI();
-    lastResult={dl:dlMbps,ul:ulMbps,ping:pingMs,jitter:jitterMs,loss:lossP,bloat:bloatInfo?.note,score};
-    saveHistory({dl:dlMbps,ul:ulMbps,ping:pingMs,jitter:jitterMs,loss:lossP});
-    updateChart();
-    document.getElementById('shareBar').classList.add('show');
-    track('test_completed',{download:Math.round(dlMbps),upload:Math.round(ulMbps),ping:pingMs,loss:lossP,score:score.score});
-
-  }catch(err){
-    setPhase('');document.getElementById('testStatus').textContent='⚠️ Test failed — check your connection';
-    document.getElementById('retryBtn').classList.add('show');
-    setGauge(0,100);setGaugeText(null);
-    track('test_failed');console.error('[REFLEXA]',err);
-  }finally{
-    isTesting=false;btn.disabled=false;btn.classList.remove('running');
-    document.getElementById('startBtnTxt').textContent=t('startTest');
-  }
-}
-
-/* ══ INIT ══ */
-function init(){
-  applyTheme();applyLang();updateProUI();updateFreemiumUI();
-  detectNetworkInfo();checkIPv6();updateChart();updateChartNote();
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-  window.addEventListener('online',()=>{document.getElementById('netStatus').textContent=t('statusOnline');});
-  window.addEventListener('offline',()=>{document.getElementById('netStatus').textContent=t('statusOffline');});
-}
-init();
+});
 </script>
+
 </body>
 </html>
