@@ -4,13 +4,11 @@
 
 function enc(s) { return new TextEncoder().encode(s); }
 
-// Secret derived in multiple steps to resist static analysis
-// After obfuscation: this becomes unreadable
+// Secret — split into fragments to resist static analysis
+// After obfuscation with RC4 + control-flow-flattening: becomes unreadable
 function _S() {
-  const a = ['5K', 'CR', '_2', 'X3', 'RF'];
-  const b = ['0_', 'ET', 'LX', 'S_'];
-  const c = [a[4], a[1], b[1], b[2], a[0], b[3], a[3], b[0]];
-  return c.join('').split('').map((ch, i) => String.fromCharCode(ch.charCodeAt(0) ^ (i % 7))).join('');
+  const f = ['RFX3_K9p', '#mZw_202', '5_License', 'Key_REFLE', 'XA_v3_SEC', 'URE_48cha', 'rs!'];
+  return f.reduce((a, b) => a + b, '');
 }
 
 async function hmacHex(data, secret) {

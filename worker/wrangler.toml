@@ -8,8 +8,8 @@ compatibility_flags = ["nodejs_compat"]
 # Then replace the id below
 [[kv_namespaces]]
 binding  = "LICENSES"
-id       = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
-preview_id = "REPLACE_WITH_YOUR_PREVIEW_KV_ID"
+id       = "bd68810087d24442a6b39e806d9c5048"
+preview_id = "e7a1ac47589d4439bd928473fd8ad6d4"
 
 # ── Routes ────────────────────────────────────────────────────────
 # Uncomment after deploying a custom domain
