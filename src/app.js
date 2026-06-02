@@ -883,8 +883,8 @@ async function init() {
     deactivatePro: async () => { if (confirm('Deactivate Pro?')) { await deactivatePro(); setFreemiumUI(); } },
     goToCheckout: (plan = 'monthly') => {
       const urls = {
-        monthly: 'https://lhk96l.lemonsqueezy.com/checkout/buy/545f51da-ba26-4108-9078-6c2f89393522',
-        annual:  'https://lhk96l.lemonsqueezy.com/checkout/buy/8da42570-ca01-4925-a8ee-42652e160ce5',
+        monthly: 'https://lhk96l.lemonsqueezy.com/checkout/buy/55058b83-34ae-4f1e-b734-3fe21a5b9df4',
+        annual:  'https://lhk96l.lemonsqueezy.com/checkout/buy/d91818cb-e840-41fa-918f-5afaac1956c9',
       };
       window.open(urls[plan] || urls.monthly, '_blank');
     },
