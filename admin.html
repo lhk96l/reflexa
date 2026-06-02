@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REFLEXA Admin</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0B0F1E;color:#F1F5F9;min-height:100vh;padding:24px;}
+  .wrap{max-width:600px;margin:0 auto;}
+  h1{font-size:22px;font-weight:900;color:#00D4FF;margin-bottom:4px;letter-spacing:1px;}
+  .sub{font-size:12px;color:#4B5563;margin-bottom:28px;}
+  .card{background:#151D2E;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;margin-bottom:16px;}
+  .card-title{font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+  label{font-size:12px;color:#94A3B8;display:block;margin-bottom:5px;}
+  input,select{width:100%;padding:10px 12px;background:#0B0F1E;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#F1F5F9;font-size:13px;margin-bottom:12px;outline:none;}
+  input:focus,select:focus{border-color:#00D4FF;}
+  .btn{width:100%;padding:12px;background:linear-gradient(135deg,#00D4FF,#8B5CF6);border:none;border-radius:10px;color:#0B0F1E;font-size:14px;font-weight:800;cursor:pointer;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .result{margin-top:14px;padding:12px;background:#0B0F1E;border-radius:8px;font-family:monospace;font-size:13px;display:none;}
+  .result.show{display:block;}
+  .key-display{font-size:16px;font-weight:700;color:#00D4FF;margin:8px 0;word-break:break-all;}
+  .ok{color:#10B981;} .err{color:#EF4444;}
+  .copy-btn{padding:6px 14px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);border-radius:6px;color:#00D4FF;font-size:11px;font-weight:700;cursor:pointer;margin-top:6px;}
+  .divider{height:1px;background:rgba(255,255,255,0.06);margin:8px 0;}
+  .info{font-size:11px;color:#4B5563;margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>REFLEXA Admin</h1>
+  <div class="sub">License Management Panel · Private</div>
+
+  <!-- توليد مفتاح -->
+  <div class="card">
+    <div class="card-title">Generate License Key</div>
+    <label>Email</label>
+    <input id="genEmail" type="email" value="hanodeking15@gmail.com">
+    <label>Plan</label>
+    <select id="genPlan">
+      <option value="pro-annual">Pro Annual (366 days)</option>
+      <option value="pro-monthly">Pro Monthly (31 days)</option>
+      <option value="enterprise">Enterprise (366 days)</option>
+    </select>
+    <label>Send Email?</label>
+    <select id="genSendEmail">
+      <option value="yes">Yes — send license email</option>
+      <option value="no">No — just generate key</option>
+    </select>
+    <button class="btn" id="genBtn" onclick="generateKey()">Generate Key</button>
+    <div class="result" id="genResult"></div>
+  </div>
+
+  <!-- التحقق من مفتاح -->
+  <div class="card">
+    <div class="card-title">Validate License Key</div>
+    <label>License Key</label>
+    <input id="valKey" type="text" placeholder="RXFLX-XXXXXXXX-XXXXXX-X-XXXXXXXX">
+    <button class="btn" onclick="validateKey()" style="background:rgba(16,185,129,.15);color:#10B981;border:1px solid #10B981;">Validate Key</button>
+    <div class="result" id="valResult"></div>
+  </div>
+
+  <!-- إرسال magic link -->
+  <div class="card">
+    <div class="card-title">Send Magic Link</div>
+    <label>Email</label>
+    <input id="mlEmail" type="email" value="hanodeking15@gmail.com">
+    <button class="btn" onclick="sendMagicLink()" style="background:rgba(139,92,246,.15);color:#8B5CF6;border:1px solid #8B5CF6;">Send Magic Link</button>
+    <div class="result" id="mlResult"></div>
+  </div>
+
+</div>
+
+<script>
+const WORKER = 'https://reflexa-license.hanodeking15.workers.dev';
+const LS_SECRET = 'RxFlx_LS_Wh00k_S3cr3t_2025!';
+
+async function hmacHex(data, secret) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name:'HMAC', hash:'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
+  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function generateKey() {
+  const email   = document.getElementById('genEmail').value.trim();
+  const plan    = document.getElementById('genPlan').value;
+  const sendMail= document.getElementById('genSendEmail').value === 'yes';
+  const btn     = document.getElementById('genBtn');
+  const result  = document.getElementById('genResult');
+
+  if (!email) { alert('Enter email'); return; }
+  btn.disabled = true; btn.textContent = 'Generating...';
+
+  const orderId = `admin-${Date.now()}`;
+  const body = JSON.stringify({
+    data: {
+      id: orderId,
+      attributes: {
+        user_email:   email,
+        product_name: plan === 'pro-annual' ? 'REFLEXA Pro Annual' : plan === 'enterprise' ? 'REFLEXA Enterprise' : 'REFLEXA Pro Monthly',
+        variant_name: plan === 'pro-annual' ? 'Annual' : 'Monthly',
+      }
+    }
+  });
+
+  const sig = await hmacHex(body, LS_SECRET);
+
+  try {
+    const res  = await fetch(`${WORKER}/webhook/lemonsqueezy`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'X-Event-Name':'order_created', 'X-Signature': sig },
+      body,
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      result.className = 'result show';
+      result.innerHTML = `
+        <div class="ok">Key generated successfully!</div>
+        <div class="key-display">${data.key}</div>
+        <div class="divider"></div>
+        <div class="info">Email sent: ${data.emailSent ? 'Yes' : 'No'} · Plan: ${plan}</div>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('${data.key}');this.textContent='Copied!'">Copy Key</button>
+      `;
+    } else {
+      result.className = 'result show';
+      result.innerHTML = `<div class="err">${JSON.stringify(data)}</div>`;
+    }
+  } catch(e) {
+    result.className = 'result show';
+    result.innerHTML = `<div class="err">Error: ${e.message}</div>`;
+  }
+
+  btn.disabled = false; btn.textContent = 'Generate Key';
+}
+
+async function validateKey() {
+  const key    = document.getElementById('valKey').value.trim();
+  const result = document.getElementById('valResult');
+  if (!key) return;
+
+  result.className = 'result show';
+  result.innerHTML = '<div style="color:#64748B">Validating...</div>';
+
+  try {
+    const res  = await fetch(`${WORKER}/api/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ key }),
+    });
+    const data = await res.json();
+    result.innerHTML = data.valid
+      ? `<div class="ok">Valid Key</div>
+         <div class="info">Expires: ${data.expiry}</div>
+         <div class="info">Features: ${JSON.stringify(data.features)}</div>`
+      : `<div class="err">Invalid: ${data.reason}</div>`;
+  } catch(e) {
+    result.innerHTML = `<div class="err">${e.message}</div>`;
+  }
+}
+
+async function sendMagicLink() {
+  const email  = document.getElementById('mlEmail').value.trim();
+  const result = document.getElementById('mlResult');
+  if (!email) return;
+
+  result.className = 'result show';
+  result.innerHTML = '<div style="color:#64748B">Sending...</div>';
+
+  try {
+    const res  = await fetch(`${WORKER}/api/magic-link`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    result.innerHTML = data.ok
+      ? `<div class="ok">Magic link sent to ${email}</div><div class="info">Valid for 10 minutes</div>`
+      : `<div class="err">${data.reason}</div>`;
+  } catch(e) {
+    result.innerHTML = `<div class="err">${e.message}</div>`;
+  }
+}
+</script>
+</body>
+</html>
