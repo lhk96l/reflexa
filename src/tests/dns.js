@@ -1,13 +1,13 @@
 // REFLEXA v3.0 — Real DNS-over-HTTPS Benchmark (RFC 8484)
-// Tests 6 major resolvers + system DNS
+// ملاحظة مهمة: المتصفحات تمنع DoH من resolvers بلا CORS headers.
+// فقط Cloudflare و Google يدعمان CORS — البقية (Quad9/AdGuard/OpenDNS/NextDNS)
+// لا يمكن قياسها من المتصفح إطلاقاً (قيد أمني). نختبر فقط ما يعمل فعلياً:
 
 export const DNS_RESOLVERS = [
-  { name: 'Cloudflare 1.1.1.1', doh: 'https://cloudflare-dns.com/dns-query', icon: '🟠', privacy: 'High' },
-  { name: 'Google 8.8.8.8',     doh: 'https://dns.google/dns-query',          icon: '🔵', privacy: 'Medium' },
-  { name: 'Quad9 9.9.9.9',      doh: 'https://dns.quad9.net/dns-query',        icon: '🟣', privacy: 'High' },
-  { name: 'NextDNS',            doh: 'https://dns.nextdns.io/dns-query',       icon: '🟢', privacy: 'High' },
-  { name: 'AdGuard DNS',        doh: 'https://dns.adguard-dns.com/dns-query',  icon: '🟡', privacy: 'High' },
-  { name: 'OpenDNS',            doh: 'https://doh.opendns.com/dns-query',      icon: '⚪', privacy: 'Medium' },
+  { name: 'Cloudflare 1.1.1.1',        doh: 'https://cloudflare-dns.com/dns-query',          icon: '🟠', privacy: 'High' },
+  { name: 'Cloudflare Security 1.1.1.2',doh: 'https://security.cloudflare-dns.com/dns-query', icon: '🛡️', privacy: 'High' },
+  { name: 'Cloudflare Family 1.1.1.3', doh: 'https://family.cloudflare-dns.com/dns-query',   icon: '👨‍👩‍👧', privacy: 'High' },
+  { name: 'Google 8.8.8.8',            doh: 'https://dns.google/dns-query',                   icon: '🔵', privacy: 'Medium' },
 ];
 
 const BENCH_DOMAINS = ['google.com', 'cloudflare.com', 'amazon.com', 'microsoft.com', 'github.com'];
