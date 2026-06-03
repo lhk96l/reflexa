@@ -105,6 +105,15 @@ select{width:100%;padding:10px 12px;background:#0B0F1E;border:1px solid rgba(255
     <button class="action-btn btn-ml" onclick="sendMagicLink()">Send Magic Link</button>
     <div class="result" id="mlResult"></div>
   </div>
+
+  <!-- Unban IP -->
+  <div class="card">
+    <div class="card-title">Unban IP Address</div>
+    <label>IP Address (remove false-positive ban)</label>
+    <input id="unbanIP" type="text" placeholder="185.124.149.110">
+    <button class="action-btn btn-val" onclick="unbanIP()">Unban IP</button>
+    <div class="result" id="unbanResult"></div>
+  </div>
 </div>
 
 <script>
@@ -228,6 +237,26 @@ async function sendMagicLink() {
     const data = await r.json();
     res.innerHTML = data.ok
       ? `<div class="ok">Magic link sent to ${email}</div><div class="meta">Valid 10 minutes</div>`
+      : `<div class="bad">${data.reason}</div>`;
+  } catch(e) {
+    res.innerHTML = `<div class="bad">${e.message}</div>`;
+  }
+}
+
+async function unbanIP() {
+  const ip  = document.getElementById('unbanIP').value.trim();
+  const res = document.getElementById('unbanResult');
+  if (!ip) return;
+
+  res.className = 'result show';
+  res.innerHTML = '<div style="color:#64748B">Unbanning...</div>';
+
+  try {
+    const r    = await fetch(`${WORKER}/admin/unban`, { method:'POST', headers:authHeaders(), body:JSON.stringify({ip}) });
+    const data = await r.json();
+    if (r.status === 401) { doLogout(); return; }
+    res.innerHTML = data.ok
+      ? `<div class="ok">${data.message}</div>`
       : `<div class="bad">${data.reason}</div>`;
   } catch(e) {
     res.innerHTML = `<div class="bad">${e.message}</div>`;

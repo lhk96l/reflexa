@@ -477,6 +477,17 @@ async function requireAdmin(request, env) {
   return valid;
 }
 
+// رفع الحظر عن IP (للحالات الخاطئة) — admin only
+async function handleAdminUnban(request, env) {
+  if (!await requireAdmin(request, env)) return json({ ok: false, reason: 'Unauthorized' }, 401);
+  const body = await safeJson(request);
+  if (body._tooLarge || body._badJson) return json({ ok: false, reason: 'Bad request' }, 400, request);
+  const ip = (body.ip || '').trim();
+  if (!ip) return json({ ok: false, reason: 'No IP' }, 400, request);
+  await env.LICENSES.delete(`ban:${ip}`);
+  return json({ ok: true, message: `Unbanned ${ip}` }, 200, request);
+}
+
 async function handleAdminGenerateKey(request, env) {
   if (!await requireAdmin(request, env)) return json({ ok: false, reason: 'Unauthorized' }, 401);
 
@@ -519,15 +530,16 @@ async function isBanned(ip, env) {
 }
 
 async function banIP(ip, env, reason) {
-  await env.LICENSES.put(`ban:${ip}`, JSON.stringify({ reason, ts: Date.now() }), { expirationTtl: 86400 });
+  // مدة قصيرة (1 ساعة) لتقليل أضرار CGNAT — IP واحد قد يخدم آلاف المستخدمين
+  await env.LICENSES.put(`ban:${ip}`, JSON.stringify({ reason, ts: Date.now() }), { expirationTtl: 3600 });
 }
 
-// كشف الـ bots والأدوات الآلية المعروفة
+// كشف أدوات الاختراق الواضحة فقط (لا curl/python — قد تكون شرعية)
 function looksLikeAttacker(request) {
   const ua = (request.headers.get('User-Agent') || '').toLowerCase();
-  if (!ua) return true; // طلب بلا User-Agent = مشبوه
-  const badAgents = ['sqlmap', 'nikto', 'nmap', 'masscan', 'havij', 'acunetix', 'nessus', 'metasploit', 'hydra', 'gobuster', 'dirbuster', 'wpscan', 'curl/7.', 'python-requests'];
-  return badAgents.some(a => ua.includes(a));
+  // أدوات فحص ثغرات معروفة 100% خبيثة
+  const badAgents = ['sqlmap', 'nikto', 'nmap', 'masscan', 'havij', 'acunetix', 'nessus', 'metasploit', 'hydra', 'gobuster', 'dirbuster', 'wpscan', 'zgrab', 'nuclei'];
+  return ua && badAgents.some(a => ua.includes(a));
 }
 
 export default {
@@ -536,8 +548,11 @@ export default {
     const method = request.method;
     const ip     = request.headers.get('CF-Connecting-IP') || 'unknown';
 
-    // طبقة 7a: فحص الحظر أولاً (أسرع رفض)
-    if (await isBanned(ip, env)) {
+    // مسارات الإدارة معفاة من حظر IP (محمية بـ JWT + password + rate limit أقوى)
+    const isAdminPath = url.pathname.startsWith('/admin/');
+
+    // طبقة 7a: فحص الحظر أولاً (أسرع رفض) — عدا مسارات الإدارة
+    if (!isAdminPath && await isBanned(ip, env)) {
       return new Response('Forbidden', { status: 403, headers: SEC_HEADERS });
     }
 
@@ -568,6 +583,7 @@ export default {
       // Admin endpoints
       if (url.pathname === '/admin/login'          && method === 'POST') return await handleAdminLogin(request, env);
       if (url.pathname === '/admin/generate-key'   && method === 'POST') return await handleAdminGenerateKey(request, env);
+      if (url.pathname === '/admin/unban'          && method === 'POST') return await handleAdminUnban(request, env);
       return json({ error: 'Not found' }, 404, request);
     } catch (err) {
       console.error('[RXFLX Worker]', err);
