@@ -10,7 +10,7 @@ import { detectWebRTCLeaks } from './tests/webrtc.js';
 import { detectThrottling } from './tests/isp.js';
 import { runProtocolAnalysis } from './tests/protocol.js';
 import { runGeoLatency, GLOBAL_POPS } from './tests/geo-latency.js';
-import { downloadPNG, downloadCSV, buildShareText } from './report.js';
+import { downloadPNG, downloadCSV, downloadPDF, buildShareText } from './report.js';
 
 // ── State ─────────────────────────────────────────────────────────
 const state = {
@@ -669,6 +669,11 @@ function doDownloadCSV()  {
   if (!state.proActive) { showModal('proOverlay'); return; }
   downloadCSV(state.history);
 }
+function doDownloadPDF() {
+  if (!state.proActive) { showModal('proOverlay'); return; }
+  if (!state.lastResult) return;
+  downloadPDF(state.lastResult, state.history);
+}
 function doCopyResult() {
   if (!state.lastResult) return;
   const text = buildShareText(state.lastResult, i18n.lang);
@@ -904,7 +909,7 @@ async function init() {
       const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
       if (isMobile) { window.location.href = url; } else { window.open(url, '_blank'); }
     },
-    doDownloadPNG, doDownloadCSV, doCopyResult, doShare,
+    doDownloadPNG, doDownloadCSV, doDownloadPDF, doCopyResult, doShare,
     sendFeedback: () => window.open('mailto:hanodeking15@gmail.com?subject=REFLEXA%20Feedback'),
   };
 }

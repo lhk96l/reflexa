@@ -137,6 +137,180 @@ export function downloadCSV(history) {
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 
+// ── PDF Export (Print-to-PDF) ─────────────────────────────────────
+export function downloadPDF(data, history = []) {
+  const d = new Date().toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' });
+  const score = data.score || {};
+  const itu   = data.itu   || {};
+  const mos   = data.mos   || {};
+  const rfc   = data.rfc   || {};
+  const bloat = data.bloat || {};
+
+  const row = (label, value, color = '') =>
+    `<tr><td class="lbl">${label}</td><td class="val" style="color:${color || 'inherit'}">${value || '—'}</td></tr>`;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>REFLEXA Network Report — ${d}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fff; color:#0F172A; padding:32px; font-size:13px; }
+  .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; padding-bottom:16px; border-bottom:3px solid #00D4FF; }
+  .logo { font-size:28px; font-weight:900; letter-spacing:2px; color:#00D4FF; }
+  .logo-sub { font-size:11px; color:#64748B; text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+  .date { text-align:right; font-size:12px; color:#64748B; }
+  .grade-box { display:inline-block; font-size:64px; font-weight:900; color:${score.color || '#10B981'}; line-height:1; }
+  .summary { display:grid; grid-template-columns:auto 1fr; gap:24px; background:#F8FAFF; border-radius:12px; padding:20px; margin-bottom:20px; }
+  .summary-right h2 { font-size:14px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  .summary-right .score-num { font-size:22px; font-weight:800; color:${score.color || '#10B981'}; }
+  .summary-right .itu { font-size:13px; color:#0F172A; font-weight:600; margin-top:4px; }
+  .summary-right .itu-sub { font-size:11px; color:#64748B; }
+  .section { margin-bottom:18px; }
+  .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#64748B; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #E2E8F0; }
+  table { width:100%; border-collapse:collapse; }
+  tr:nth-child(even) { background:#F8FAFF; }
+  td { padding:7px 10px; }
+  td.lbl { color:#64748B; font-weight:600; width:45%; }
+  td.val { font-weight:700; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .recs { background:#FFF7ED; border:1px solid #FED7AA; border-radius:8px; padding:14px; }
+  .rec-item { font-size:12px; color:#92400E; margin-bottom:4px; }
+  .footer { margin-top:24px; padding-top:12px; border-top:1px solid #E2E8F0; display:flex; justify-content:space-between; font-size:10px; color:#94A3B8; }
+  .hist-table { width:100%; border-collapse:collapse; font-size:11px; }
+  .hist-table th { background:#F1F5F9; padding:6px 8px; text-align:left; font-weight:700; color:#64748B; }
+  .hist-table td { padding:5px 8px; border-bottom:1px solid #F1F5F9; }
+  @media print {
+    body { padding:16px; }
+    @page { margin:1cm; size:A4; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">REFLEXA</div>
+    <div class="logo-sub">Advanced Network Diagnostic Report</div>
+  </div>
+  <div class="date">
+    <div>${d}</div>
+    <div style="margin-top:4px">v3.0.0</div>
+  </div>
+</div>
+
+<!-- Summary -->
+<div class="summary">
+  <div class="grade-box">${score.letter || '—'}</div>
+  <div class="summary-right">
+    <h2>Network Score</h2>
+    <div class="score-num">${score.score || '—'}/100</div>
+    <div class="itu">${itu.label || ''} ${itu.description ? '— ' + itu.description : ''}</div>
+    <div class="itu-sub">ITU-T Y.1541 Classification · MOS Score: ${mos.score || '—'} (${mos.label || '—'})</div>
+  </div>
+</div>
+
+<div class="grid2">
+  <!-- Speed Metrics -->
+  <div class="section">
+    <div class="section-title">Speed Metrics (RFC 6349)</div>
+    <table>
+      ${row('Download', data.dl ? data.dl.toFixed(2) + ' Mbps' : '—', '#00D4FF')}
+      ${row('Upload', data.ul ? data.ul.toFixed(2) + ' Mbps' : '—', '#8B5CF6')}
+      ${row('TCP Efficiency', rfc.tcpEfficiency ? rfc.tcpEfficiency + '%' : '—', rfc.compliant ? '#10B981' : '#F59E0B')}
+      ${row('Transfer Time Ratio', rfc.ttr || '—')}
+      ${row('Bandwidth-Delay Product', rfc.bdp || '—')}
+      ${row('Retransmission Rate', rfc.retransmitRate ? rfc.retransmitRate + '%' : '—')}
+    </table>
+  </div>
+
+  <!-- Latency Analysis -->
+  <div class="section">
+    <div class="section-title">Latency Analysis</div>
+    <table>
+      ${row('Ping (Min RTT)', data.ping ? data.ping + ' ms' : '—', '#10B981')}
+      ${row('Mean RTT', data.mean ? data.mean + ' ms' : '—')}
+      ${row('Jitter', data.jitter ? data.jitter + ' ms' : '—', '#F59E0B')}
+      ${row('P95 Latency', data.p95 ? data.p95 + ' ms' : '—')}
+      ${row('P99 Latency', data.p99 ? data.p99 + ' ms' : '—')}
+      ${row('MOS Score (G.107)', mos.score ? mos.score + ' — ' + mos.label : '—', mos.color)}
+    </table>
+  </div>
+
+  <!-- Reliability -->
+  <div class="section">
+    <div class="section-title">Reliability</div>
+    <table>
+      ${row('Packet Loss', data.loss !== undefined ? data.loss + '%' : '—', data.loss === 0 ? '#10B981' : '#EF4444')}
+      ${row('Bufferbloat Grade', bloat.grade || '—', bloat.color)}
+      ${row('Bufferbloat Increase', bloat.increase ? bloat.increase + '%' : '—')}
+      ${row('Baseline RTT', bloat.baseline ? bloat.baseline + ' ms' : '—')}
+      ${row('Loaded RTT', bloat.loaded ? bloat.loaded + ' ms' : '—')}
+    </table>
+  </div>
+
+  <!-- Standards Compliance -->
+  <div class="section">
+    <div class="section-title">Standards Compliance</div>
+    <table>
+      ${row('ITU-T Y.1541 Class', itu.label + (itu.description ? ' — ' + itu.description : ''), itu.color)}
+      ${row('RFC 6349 Grade', rfc.grade || '—', rfc.compliant ? '#10B981' : '#F59E0B')}
+      ${row('RFC 7567 Bufferbloat', bloat.grade ? 'Grade ' + bloat.grade + ' — ' + bloat.label : '—', bloat.color)}
+      ${row('ITU-T G.107 MOS', mos.r_factor ? 'R-Factor: ' + mos.r_factor : '—')}
+    </table>
+  </div>
+</div>
+
+${bloat.advice ? `
+<div class="section">
+  <div class="recs">
+    <div style="font-weight:700;margin-bottom:6px;color:#92400E">Recommendations</div>
+    <div class="rec-item">• ${bloat.advice}</div>
+  </div>
+</div>` : ''}
+
+${history.length > 0 ? `
+<div class="section">
+  <div class="section-title">Test History (Last ${history.length} Tests)</div>
+  <table class="hist-table">
+    <thead><tr><th>Date</th><th>Time</th><th>↓ Mbps</th><th>↑ Mbps</th><th>Ping</th><th>Grade</th><th>MOS</th></tr></thead>
+    <tbody>
+      ${history.slice(-10).map(r => `<tr>
+        <td>${r.date || ''}</td><td>${r.time || ''}</td>
+        <td>${r.dl?.toFixed(1) || '—'}</td><td>${r.ul?.toFixed(1) || '—'}</td>
+        <td>${r.ping || '—'} ms</td><td><strong>${r.grade || '—'}</strong></td>
+        <td>${r.mos || '—'}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>
+</div>` : ''}
+
+<div class="footer">
+  <span>REFLEXA v3.0 — Advanced Network Diagnostic Tool</span>
+  <span>By Eng. Mohanad Al-Mothafer · lhk96l.github.io/reflexa</span>
+</div>
+
+<script>window.onload = () => window.print();</script>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    // Fallback: download as HTML if popup blocked
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `REFLEXA-Report-${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    return;
+  }
+  win.document.write(html);
+  win.document.close();
+}
+
 // ── Text Copy Result ──────────────────────────────────────────────
 export function buildShareText(data, lang = 'en') {
   const isAr = lang === 'ar';

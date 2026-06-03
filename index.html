@@ -39,7 +39,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 
 <!-- Chart.js with SRI -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"
+  integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
+  crossorigin="anonymous"></script>
 
 <style>
 /* ══ VARIABLES ══════════════════════════════════════════════════════ */
@@ -479,6 +481,7 @@ footer a{color:var(--cyan);text-decoration:none;cursor:pointer;}
       <button class="btn-share"               onclick="RXFLX.doShare()">🔗 <span data-i18n="share">Share</span></button>
       <button class="btn-share"               onclick="RXFLX.doDownloadPNG()">🖼️ <span data-i18n="saveImage">Save Image</span></button>
       <button class="btn-share"               onclick="RXFLX.doDownloadCSV()">📊 <span data-i18n="exportCSV">Export CSV</span></button>
+      <button class="btn-share"               onclick="RXFLX.doDownloadPDF()">📄 <span data-i18n="exportPDF">Export PDF</span></button>
     </div>
 
     <!-- Network Info -->
