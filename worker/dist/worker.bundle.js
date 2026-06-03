@@ -137,17 +137,52 @@ async function sendLicenseEmail(to, licenseKey, plan, resendApiKey) {
 }
 
 // ══ index.js (Main Handler) ═══════════════════════════════════════
-const CORS = {
-  'Access-Control-Allow-Origin':  '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Event-Name, X-Signature',
+
+// ── SECURITY LAYER 4 — Origin-restricted CORS ────────────────────
+const ALLOWED_ORIGINS = [
+  'https://lhk96l.github.io',
+  'http://localhost',        // للتطوير المحلي
+  'http://127.0.0.1',
+];
+
+function corsHeaders(request) {
+  const origin = request.headers.get('Origin') || '';
+  const allowed = ALLOWED_ORIGINS.some(o => origin === o || origin.startsWith(o + ':') || origin.startsWith(o + '/'));
+  return {
+    'Access-Control-Allow-Origin':  allowed ? origin : 'https://lhk96l.github.io',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age':       '86400',
+    'Vary':                         'Origin',
+  };
+}
+
+// ── SECURITY LAYER 5 — Security headers on every response ────────
+const SEC_HEADERS = {
+  'X-Content-Type-Options':    'nosniff',
+  'X-Frame-Options':           'DENY',
+  'Referrer-Policy':           'no-referrer',
+  'Cache-Control':             'no-store, no-cache, must-revalidate',
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
 };
 
-function json(data, status = 200) {
+function json(data, status = 200, request = null) {
+  const cors = request ? corsHeaders(request) : { 'Access-Control-Allow-Origin': 'https://lhk96l.github.io' };
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json', ...CORS },
+    headers: { 'Content-Type': 'application/json', ...cors, ...SEC_HEADERS },
   });
+}
+
+// ── SECURITY LAYER 5b — Request body size guard ──────────────────
+const MAX_BODY_SIZE = 4096; // 4KB — أكبر من أي طلب شرعي بكثير
+
+async function safeJson(request) {
+  const contentLength = parseInt(request.headers.get('Content-Length') || '0');
+  if (contentLength > MAX_BODY_SIZE) return { _tooLarge: true };
+  const text = await request.text();
+  if (text.length > MAX_BODY_SIZE) return { _tooLarge: true };
+  try { return JSON.parse(text); } catch { return { _badJson: true }; }
 }
 
 async function verifyLSSignature(body, signature, secret) {
@@ -207,31 +242,41 @@ async function handleWebhook(request, env) {
   return json({ ok: true, key: licenseKey, emailSent: emailResult.ok });
 }
 
+// مفتاح REFLEXA الشرعي لا يتجاوز ~40 حرف — أي أطول = هجوم
+const MAX_KEY_LEN = 48;
+const KEY_PATTERN = /^RXFLX-[A-Z0-9]{4,12}-[A-Z0-9]{4,8}-[A-Z0-9]{1,3}-[A-F0-9]{8}$/;
+
 async function handleValidate(request, env) {
-  let body;
-  try { body = await request.json(); } catch { return json({ valid: false }, 400); }
+  const body = await safeJson(request);
+  if (body._tooLarge) return json({ valid: false, reason: 'Request too large' }, 413, request);
+  if (body._badJson)  return json({ valid: false, reason: 'Bad request' }, 400, request);
+
   const key = (body.key || '').trim().toUpperCase();
-  if (!key) return json({ valid: false, reason: 'No key' }, 400);
+  if (!key) return json({ valid: false, reason: 'No key' }, 400, request);
+
+  // طبقة 6: التحقق من الطول والصيغة قبل أي معالجة (يمنع DoS وbrute force)
+  if (key.length > MAX_KEY_LEN) return json({ valid: false, reason: 'Invalid format' }, 400, request);
+  if (!KEY_PATTERN.test(key))   return json({ valid: false, reason: 'Invalid format' }, 400, request);
 
   // Rate limiting — 10 طلبات / دقيقة لكل IP
   const ip    = request.headers.get('CF-Connecting-IP') || 'unknown';
   const rlKey = `ratelimit:validate:${ip}`;
   const rl    = parseInt(await env.LICENSES.get(rlKey) || '0');
-  if (rl >= 10) return json({ valid: false, reason: 'Too many requests. Try again later.' }, 429);
+  if (rl >= 10) return json({ valid: false, reason: 'Too many requests. Try again later.' }, 429, request);
   await env.LICENSES.put(rlKey, String(rl + 1), { expirationTtl: 60 });
 
   const result = await verifyKey(key, env.RXFLX_SECRET);
-  if (!result.valid) return json(result);
+  if (!result.valid) return json(result, 200, request);
 
   const meta = await env.LICENSES.get(`key:${key}`);
   if (meta) {
     const parsed = JSON.parse(meta);
-    if (!parsed.active) return json({ valid: false, reason: 'Revoked' });
+    if (!parsed.active) return json({ valid: false, reason: 'Revoked' }, 200, request);
     parsed.used = (parsed.used || 0) + 1;
     parsed.lastSeen = new Date().toISOString();
     await env.LICENSES.put(`key:${key}`, JSON.stringify(parsed), { expirationTtl: 366 * 86400 });
   }
-  return json({ ...result, serverValidated: true });
+  return json({ ...result, serverValidated: true }, 200, request);
 }
 
 async function handleResendKey(request, env) {
@@ -459,12 +504,59 @@ async function handleAdminGenerateKey(request, env) {
   return json({ ok: true, key: licenseKey, emailSent });
 }
 
+// ── SECURITY LAYER 7 — Honeypot + Auto-ban ───────────────────────
+// مسارات الطُّعم: أي محاولة وصول لها = مهاجم → حظر IP فوراً
+// ملاحظة: لا نضع '/admin' لأن /admin/login و /admin/generate-key شرعيان
+const HONEYPOT_PATHS = [
+  '/.env', '/.git', '/config.json', '/wp-admin', '/wp-login.php',
+  '/admin.php', '/phpmyadmin', '/.aws', '/api/keys',
+  '/api/users', '/api/admin', '/backup', '/.ssh', '/shell',
+  '/api/secrets', '/credentials', '/.htaccess', '/server-status',
+];
+
+async function isBanned(ip, env) {
+  return !!(await env.LICENSES.get(`ban:${ip}`));
+}
+
+async function banIP(ip, env, reason) {
+  await env.LICENSES.put(`ban:${ip}`, JSON.stringify({ reason, ts: Date.now() }), { expirationTtl: 86400 });
+}
+
+// كشف الـ bots والأدوات الآلية المعروفة
+function looksLikeAttacker(request) {
+  const ua = (request.headers.get('User-Agent') || '').toLowerCase();
+  if (!ua) return true; // طلب بلا User-Agent = مشبوه
+  const badAgents = ['sqlmap', 'nikto', 'nmap', 'masscan', 'havij', 'acunetix', 'nessus', 'metasploit', 'hydra', 'gobuster', 'dirbuster', 'wpscan', 'curl/7.', 'python-requests'];
+  return badAgents.some(a => ua.includes(a));
+}
+
 export default {
   async fetch(request, env) {
     const url    = new URL(request.url);
     const method = request.method;
+    const ip     = request.headers.get('CF-Connecting-IP') || 'unknown';
 
-    if (method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
+    // طبقة 7a: فحص الحظر أولاً (أسرع رفض)
+    if (await isBanned(ip, env)) {
+      return new Response('Forbidden', { status: 403, headers: SEC_HEADERS });
+    }
+
+    // طبقة 7b: Honeypot — أي وصول لمسار طُعم = حظر فوري 24 ساعة
+    if (HONEYPOT_PATHS.some(p => url.pathname.toLowerCase().startsWith(p))) {
+      await banIP(ip, env, `honeypot:${url.pathname}`);
+      return new Response('Not Found', { status: 404, headers: SEC_HEADERS });
+    }
+
+    // طبقة 7c: حظر أدوات الاختراق المعروفة
+    if (looksLikeAttacker(request) && url.pathname !== '/api/health') {
+      await banIP(ip, env, 'attack-tool-ua');
+      return new Response('Forbidden', { status: 403, headers: SEC_HEADERS });
+    }
+
+    // CORS preflight
+    if (method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: { ...corsHeaders(request), ...SEC_HEADERS } });
+    }
 
     try {
       if (url.pathname === '/webhook/lemonsqueezy' && method === 'POST') return await handleWebhook(request, env);
@@ -472,14 +564,14 @@ export default {
       if (url.pathname === '/api/resend-key'       && method === 'POST') return await handleResendKey(request, env);
       if (url.pathname === '/api/magic-link'       && method === 'POST') return await handleMagicLink(request, env);
       if (url.pathname === '/api/activate'         && method === 'GET')  return await handleActivateToken(request, env);
-      if (url.pathname === '/api/health'           && method === 'GET')  return json({ status: 'ok', version: '3.2.0', ts: Date.now() });
+      if (url.pathname === '/api/health'           && method === 'GET')  return json({ status: 'ok', version: '3.4.0', ts: Date.now() }, 200, request);
       // Admin endpoints
       if (url.pathname === '/admin/login'          && method === 'POST') return await handleAdminLogin(request, env);
       if (url.pathname === '/admin/generate-key'   && method === 'POST') return await handleAdminGenerateKey(request, env);
-      return json({ error: 'Not found' }, 404);
+      return json({ error: 'Not found' }, 404, request);
     } catch (err) {
       console.error('[RXFLX Worker]', err);
-      return json({ error: 'Internal server error' }, 500);
+      return json({ error: 'Internal server error' }, 500, request);
     }
   }
 };

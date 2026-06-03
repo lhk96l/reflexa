@@ -3,6 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<!-- ══ SECURITY LAYER 1 — Content Security Policy ══ -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com data:;
+  img-src 'self' data: blob:;
+  connect-src 'self'
+    https://reflexa-license.hanodeking15.workers.dev
+    https://speed.cloudflare.com https://1.1.1.1 https://ipapi.co
+    https://ipv6.icanhazip.com https://v6.ident.me
+    https://cloudflare-dns.com https://dns.google https://dns.quad9.net
+    https://dns.nextdns.io https://dns.adguard-dns.com https://doh.opendns.com
+    https://www.gstatic.com https://registry.npmjs.org https://cdn.jsdelivr.net
+    https://dl.google.com https://test-streams.mux.dev
+    stun: stun.l.google.com:19302 stun.cloudflare.com:3478;
+  worker-src 'self';
+  manifest-src 'self';
+  base-uri 'self';
+  form-action 'none';
+  frame-ancestors 'none';
+  object-src 'none';
+  upgrade-insecure-requests;
+">
+<!-- ══ SECURITY LAYER 3 — Clickjacking / MIME / Referrer / Permissions ══ -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()">
+
 <title>REFLEXA — Advanced Network Diagnostic Tool</title>
 <meta name="description" content="Professional network diagnostic: real-time speed testing, RFC 6349 TCP analysis, ITU-T Y.1541 scoring, DNS benchmark, WebRTC leak detection, bufferbloat grade. 100% private, offline-capable PWA.">
 <meta name="theme-color" content="#0B0F1E">
@@ -27,6 +57,17 @@
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.svg">
+
+<!-- ══ SECURITY LAYER 2 — Frame-Buster (anti-clickjacking) ══ -->
+<script>
+(function(){
+  // امنع تضمين الموقع في أي iframe (clickjacking protection)
+  if (window.top !== window.self) {
+    try { window.top.location = window.self.location; }
+    catch (e) { document.documentElement.innerHTML = '<h1 style="color:#fff;background:#000;padding:40px;text-align:center">⚠️ This page cannot be embedded.</h1>'; }
+  }
+})();
+</script>
 
 <!-- Schema.org -->
 <script type="application/ld+json">
