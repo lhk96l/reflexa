@@ -103,42 +103,43 @@ export async function measureDownload(onProgress) {
 }
 
 // ── Upload Speed ──────────────────────────────────────────────────
-export function measureUpload(onProgress) {
-  return new Promise((resolve, reject) => {
-    const SIZE = 8_000_000; // 8 MB
-    const data = new Uint8Array(SIZE);
-    crypto.getRandomValues(data.subarray(0, Math.min(65536, SIZE))); // seed first 64KB
-    // Fill rest with pattern (faster than full random)
-    for (let i = 65536; i < SIZE; i++) data[i] = data[i % 65536];
+// نستخدم fetch() بقطع متتابعة — كل طلب "simple request" بلا CORS preflight.
+// (xhr.upload listeners كانت تُجبر preflight الذي يرفضه Cloudflare /__up)
+export async function measureUpload(onProgress) {
+  const CHUNK = 2_000_000;   // 2 MB لكل قطعة
+  const CHUNKS = 5;          // إجمالي 10 MB
+  const SIZE = CHUNK * CHUNKS;
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', CF_UP);
-    // ملاحظة: لا نضبط Content-Type — يسبب CORS preflight ترفضه Cloudflare.
-    // المتصفح يضبط text/plain تلقائياً (simple request بلا preflight)
+  // جهّز بيانات عشوائية لقطعة واحدة (نعيد استخدامها)
+  const chunk = new Uint8Array(CHUNK);
+  crypto.getRandomValues(chunk.subarray(0, Math.min(65536, CHUNK)));
+  for (let i = 65536; i < CHUNK; i++) chunk[i] = chunk[i % 65536];
 
-    let t0;
-    let peakMbps = 0;
+  let totalBytes = 0;
+  let peakMbps = 0;
+  const t0 = performance.now();
 
-    xhr.upload.addEventListener('loadstart', () => { t0 = performance.now(); });
-    xhr.upload.addEventListener('progress', e => {
-      if (!t0 || !e.loaded) return;
-      const elapsed = (performance.now() - t0) / 1000;
-      if (elapsed > 0.2) {
-        const mbps = (e.loaded * 8) / (elapsed * 1e6);
-        if (mbps > peakMbps) peakMbps = mbps;
-        onProgress?.(mbps, peakMbps);
-      }
+  for (let i = 0; i < CHUNKS; i++) {
+    // fetch POST بلا headers مخصصة = simple request = بلا preflight
+    await fetch(CF_UP, {
+      method: 'POST',
+      body: chunk,
+      cache: 'no-store',
+      signal: AbortSignal.timeout(30000),
     });
-    xhr.addEventListener('load', () => {
-      const elapsed = (performance.now() - t0) / 1000;
-      const mbps = (SIZE * 8) / (elapsed * 1e6);
-      resolve({ mbps: parseFloat(mbps.toFixed(2)), peak: parseFloat(peakMbps.toFixed(2)) });
-    });
-    xhr.addEventListener('error', () => reject(new Error('Upload failed')));
-    xhr.addEventListener('timeout', () => reject(new Error('Upload timeout')));
-    xhr.timeout = 60000;
-    xhr.send(data.buffer);
-  });
+
+    totalBytes += CHUNK;
+    const elapsed = (performance.now() - t0) / 1000;
+    if (elapsed > 0.15) {
+      const mbps = (totalBytes * 8) / (elapsed * 1e6);
+      if (mbps > peakMbps) peakMbps = mbps;
+      onProgress?.(mbps, peakMbps);
+    }
+  }
+
+  const totalElapsed = (performance.now() - t0) / 1000;
+  const mbps = (SIZE * 8) / (totalElapsed * 1e6);
+  return { mbps: parseFloat(mbps.toFixed(2)), peak: parseFloat(peakMbps.toFixed(2)) };
 }
 
 // ── Bufferbloat (RFC 7567 method) ─────────────────────────────────
