@@ -113,7 +113,8 @@ export function measureUpload(onProgress) {
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', CF_UP);
-    xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+    // ملاحظة: لا نضبط Content-Type — يسبب CORS preflight ترفضه Cloudflare.
+    // المتصفح يضبط text/plain تلقائياً (simple request بلا preflight)
 
     let t0;
     let peakMbps = 0;

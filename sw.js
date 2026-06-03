@@ -1,7 +1,7 @@
 // REFLEXA v3.3 — Service Worker
 // Network-First للـ JS/HTML، Cache-First للـ Fonts/CDN، تحديث فوري
 
-const VERSION = '3.3.0';
+const VERSION = '3.4.0';
 const CACHE   = `reflexa-v${VERSION}`;
 
 const CDN_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'];
@@ -45,7 +45,11 @@ self.addEventListener('fetch', e => {
   if (CDN_HOSTS.some(h => url.hostname.includes(h))) {
     e.respondWith(
       caches.match(req).then(cached => cached || fetch(req).then(res => {
-        if (res.ok) caches.open(CACHE).then(c => c.put(req, res.clone()));
+        // استنسخ فوراً (متزامن) قبل أن يُقرأ الـ body
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copy));
+        }
         return res;
       }))
     );
@@ -55,7 +59,11 @@ self.addEventListener('fetch', e => {
   // كل ملفات التطبيق — Network-First (يضمن آخر نسخة دائماً)
   e.respondWith(
     fetch(req).then(res => {
-      if (res.ok) caches.open(CACHE).then(c => c.put(req, res.clone()));
+      // استنسخ فوراً (متزامن) قبل return لتفادي "body already used"
+      if (res.ok) {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy));
+      }
       return res;
     }).catch(() =>
       caches.match(req).then(c => c || caches.match('./index.html'))
