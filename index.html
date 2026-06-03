@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
 <!-- ══ SECURITY LAYER 1 — Content Security Policy (single-line for reliable parsing) ══ -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://reflexa-license.hanodeking15.workers.dev https://speed.cloudflare.com https://1.1.1.1 https://ipapi.co https://ipv6.icanhazip.com https://v6.ident.me https://cloudflare-dns.com https://security.cloudflare-dns.com https://family.cloudflare-dns.com https://dns.google https://www.gstatic.com https://registry.npmjs.org https://cdn.jsdelivr.net https://dl.google.com https://test-streams.mux.dev stun: stun.l.google.com:19302 stun.cloudflare.com:3478; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; upgrade-insecure-requests;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://reflexa-license.hanodeking15.workers.dev https://speed.cloudflare.com https://1.1.1.1 https://ipapi.co https://ipv6.icanhazip.com https://v6.ident.me https://cloudflare-dns.com https://security.cloudflare-dns.com https://family.cloudflare-dns.com https://dns.google https://www.gstatic.com https://registry.npmjs.org https://cdn.jsdelivr.net https://dl.google.com https://test-streams.mux.dev https://cloudflareinsights.com stun: stun.l.google.com:19302 stun.cloudflare.com:3478; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; upgrade-insecure-requests;">
 <!-- ══ SECURITY LAYER 3 — Clickjacking / MIME / Referrer / Permissions ══ -->
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -702,11 +702,13 @@ footer a{color:var(--cyan);text-decoration:none;cursor:pointer;}
   <div>Advanced Network Diagnostic Tool — v3.0 | RFC 6349 · ITU-T Y.1541 · RFC 7567</div>
   <div style="margin-top:3px">By <strong>Eng. Mohanad Al-Mothafer</strong> | ICT-Lead / CTO</div>
   <div style="margin-top:6px">
-    <a href="https://github.com/lhk96l/reflexa" target="_blank" rel="noopener">GitHub</a> ·
     <a onclick="RXFLX.showModal('proOverlay')">Pro ✨</a> ·
-    <a href="mailto:hanodeking15@gmail.com">Contact</a> ·
-    <span>© 2025 All Rights Reserved</span>
+    <a href="privacy.html">Privacy</a> ·
+    <a href="terms.html">Terms</a> ·
+    <a href="refund.html">Refund</a> ·
+    <a href="mailto:hanodeking15@gmail.com">Contact</a>
   </div>
+  <div style="margin-top:4px"><span>© 2025 All Rights Reserved · Eng. Mohanad Al-Mothafer</span></div>
 </footer>
 
 <button class="feedback-fab" onclick="RXFLX.sendFeedback()" title="Feedback" aria-label="Send feedback">💬</button>
@@ -821,6 +823,14 @@ window.addEventListener('load', () => {
   });
 });
 </script>
+
+<!-- ══ Cloudflare Web Analytics (privacy-first, no cookies, no consent banner) ══
+     SETUP: Cloudflare Dashboard → Web Analytics → Add a site → copy your token,
+     then replace YOUR_CF_TOKEN below and uncomment the script.
+     CSP already allows static.cloudflareinsights.com + cloudflareinsights.com.
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon='{"token": "YOUR_CF_TOKEN"}'></script>
+-->
 
 </body>
 </html>
