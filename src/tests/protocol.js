@@ -10,12 +10,12 @@ function detectProtocolFromPerf() {
 }
 
 export async function detectHTTPProtocol() {
-  // Fetch a resource and check its protocol via Performance API
-  const testUrl = 'https://cloudflare.com/cdn-cgi/trace';
+  // نستخدم فقط مضيفات مسموحة في CSP (speed.cloudflare.com + 1.1.1.1)
+  const testUrl = 'https://speed.cloudflare.com/__down?bytes=1';
   let cfProtocol = null;
 
   try {
-    await fetch(testUrl, { cache: 'no-store', mode: 'no-cors' });
+    await fetch(testUrl, { cache: 'no-store' });
     await new Promise(r => setTimeout(r, 100));
     const entries = performance.getEntriesByName(testUrl, 'resource');
     if (entries.length > 0) {
@@ -28,7 +28,6 @@ export async function detectHTTPProtocol() {
 
   const http2  = allProtocols.has('h2')  || cfProtocol === 'h2';
   const http3  = allProtocols.has('h3')  || cfProtocol === 'h3';
-  const http11 = allProtocols.has('http/1.1');
 
   // Get actual protocol from Cloudflare trace (most reliable)
   let cfHttp = cfProtocol;
@@ -48,30 +47,13 @@ export async function detectHTTPProtocol() {
   };
 }
 
-// ── HTTP/3 (QUIC) Support via Alt-Svc ─────────────────────────────
+// ── HTTP/3 (QUIC) Support via Performance API ─────────────────────
 export async function detectHTTP3Support() {
-  const targets = [
-    'https://cloudflare.com',
-    'https://www.google.com',
-  ];
-
-  let h3Supported = false;
-  let altSvcValues = [];
-
-  for (const url of targets) {
-    try {
-      const res = await fetch(url, { method: 'HEAD', cache: 'no-store', mode: 'no-cors' });
-      const altSvc = res.headers?.get?.('alt-svc') || '';
-      if (altSvc.includes('h3')) {
-        h3Supported = true;
-        altSvcValues.push(altSvc.slice(0, 80));
-      }
-    } catch { /* cross-origin headers may be blocked */ }
-  }
-
-  // Check Performance API for h3
+  // ملاحظة: لا نطلب cloudflare.com/google.com مباشرة (CSP + no-cors يمنع قراءة headers)
+  // نعتمد على Performance API + نتيجة trace من detectHTTPProtocol
   const protocols = detectProtocolFromPerf();
-  if (protocols.has('h3')) h3Supported = true;
+  const h3Supported = protocols.has('h3');
+  const altSvcValues = [];
 
   return { supported: h3Supported, altSvc: altSvcValues[0] || null };
 }
