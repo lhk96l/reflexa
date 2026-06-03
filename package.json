@@ -16,7 +16,7 @@
     "url": "git+https://github.com/lhk96l/reflexa.git"
   },
   "author": "Eng. Mohanad Al-Mothafer",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "devDependencies": {
     "javascript-obfuscator": "^5.4.3",
     "rollup": "^4.61.0"

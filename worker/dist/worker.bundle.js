@@ -63,7 +63,11 @@ async function verifyKey(key, secret) {
 }
 
 // ══ email.js ═════════════════════════════════════════════════════
-async function sendLicenseEmail(to, licenseKey, plan, resendApiKey) {
+// عنوان المُرسِل قابل للضبط عبر env.FROM_EMAIL (دومين موثّق في Resend)
+// الافتراضي onboarding@resend.dev يعمل للتجربة لكن قد يصل Spam
+const DEFAULT_FROM = 'REFLEXA <onboarding@resend.dev>';
+
+async function sendLicenseEmail(to, licenseKey, plan, resendApiKey, fromEmail) {
   const planLabel  = plan.includes('annual') ? 'Pro Annual' : plan.includes('enterprise') ? 'Enterprise' : 'Pro Monthly';
   const expiryDate = new Date(parseInt(licenseKey.split('-')[1], 36))
     .toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -119,7 +123,7 @@ async function sendLicenseEmail(to, licenseKey, plan, resendApiKey) {
       By <strong>Eng. Mohanad Al-Mothafer</strong> | ICT-Lead / CTO<br>
       <a href="https://github.com/lhk96l/reflexa">GitHub</a> ·
       <a href="mailto:hanodeking15@gmail.com">Support</a><br><br>
-      © 2025 MIT License
+      © 2025 All Rights Reserved
     </div>
   </div></body></html>`;
 
@@ -127,7 +131,7 @@ async function sendLicenseEmail(to, licenseKey, plan, resendApiKey) {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from:    'REFLEXA <onboarding@resend.dev>',
+      from:    fromEmail || DEFAULT_FROM,
       to:      [to],
       subject: `👑 Your REFLEXA ${planLabel} License Key`,
       html,
@@ -209,6 +213,11 @@ function getPlanId(event) {
   return 'pro-monthly';
 }
 
+// أحداث الإنشاء/الدفع الناجح → إصدار مفتاح
+const GRANT_EVENTS  = ['order_created', 'subscription_created', 'subscription_payment_success'];
+// أحداث الإلغاء/الفشل/الانتهاء → إبطال المفتاح (منع تسريب الدخل)
+const REVOKE_EVENTS = ['subscription_cancelled', 'subscription_expired', 'subscription_payment_failed'];
+
 async function handleWebhook(request, env) {
   const rawBody   = await request.text();
   const sig       = request.headers.get('X-Signature') || '';
@@ -216,16 +225,50 @@ async function handleWebhook(request, env) {
   const valid = await verifyLSSignature(rawBody, sig, env.LS_SIGNING_SECRET);
   if (!valid) return json({ error: 'Invalid signature' }, 401);
 
-  const triggers = ['order_created', 'subscription_created', 'subscription_payment_success'];
-  if (!triggers.includes(eventName)) return json({ ok: true, skipped: eventName });
-
   let event;
   try { event = JSON.parse(rawBody); } catch { return json({ error: 'Bad JSON' }, 400); }
 
-  const email   = event.data?.attributes?.user_email;
+  const email = event.data?.attributes?.user_email;
+
+  // ── إبطال الترخيص عند الإلغاء/الفشل/الانتهاء ──
+  if (REVOKE_EVENTS.includes(eventName)) {
+    if (!email) return json({ ok: true, skipped: 'no email' });
+    const key = await env.LICENSES.get(`email:${email.toLowerCase()}:latest`);
+    if (key) {
+      const metaStr = await env.LICENSES.get(`key:${key}`);
+      if (metaStr) {
+        const meta = JSON.parse(metaStr);
+        meta.active = false;
+        meta.revokedAt = new Date().toISOString();
+        meta.revokeReason = eventName;
+        await env.LICENSES.put(`key:${key}`, JSON.stringify(meta), { expirationTtl: 366 * 86400 });
+      }
+    }
+    return json({ ok: true, revoked: true, event: eventName });
+  }
+
+  // ── إصدار/إعادة تفعيل المفتاح عند الدفع الناجح ──
+  if (!GRANT_EVENTS.includes(eventName)) return json({ ok: true, skipped: eventName });
+
   const planId  = getPlanId(event);
   const orderId = event.data?.id || 'unknown';
   if (!email) return json({ error: 'No email' }, 400);
+
+  // تجديد الاشتراك: إذا للإيميل مفتاح سابق، أعد تفعيله بدل توليد جديد
+  if (eventName === 'subscription_payment_success') {
+    const existingKey = await env.LICENSES.get(`email:${email.toLowerCase()}:latest`);
+    if (existingKey) {
+      const metaStr = await env.LICENSES.get(`key:${existingKey}`);
+      if (metaStr) {
+        const meta = JSON.parse(metaStr);
+        meta.active = true;
+        meta.lastRenewal = new Date().toISOString();
+        delete meta.revokedAt; delete meta.revokeReason;
+        await env.LICENSES.put(`key:${existingKey}`, JSON.stringify(meta), { expirationTtl: 366 * 86400 });
+        return json({ ok: true, renewed: true });
+      }
+    }
+  }
 
   // Idempotency
   const existing = await env.LICENSES.get(`order:${orderId}`);
@@ -236,9 +279,9 @@ async function handleWebhook(request, env) {
 
   await env.LICENSES.put(`key:${licenseKey}`,    JSON.stringify(meta), { expirationTtl: 366 * 86400 });
   await env.LICENSES.put(`order:${orderId}`,      licenseKey);
-  await env.LICENSES.put(`email:${email}:latest`, licenseKey);
+  await env.LICENSES.put(`email:${email.toLowerCase()}:latest`, licenseKey);
 
-  const emailResult = await sendLicenseEmail(email, licenseKey, planId, env.RESEND_API_KEY);
+  const emailResult = await sendLicenseEmail(email, licenseKey, planId, env.RESEND_API_KEY, env.FROM_EMAIL);
   return json({ ok: true, key: licenseKey, emailSent: emailResult.ok });
 }
 
@@ -288,7 +331,7 @@ async function handleResendKey(request, env) {
   if (!key) return json({ ok: false, reason: 'Not found' }, 404);
   const meta    = await env.LICENSES.get(`key:${key}`);
   const planId  = meta ? JSON.parse(meta).planId : 'pro-monthly';
-  await sendLicenseEmail(email, key, planId, env.RESEND_API_KEY);
+  await sendLicenseEmail(email, key, planId, env.RESEND_API_KEY, env.FROM_EMAIL);
   return json({ ok: true });
 }
 
@@ -508,7 +551,7 @@ async function handleAdminGenerateKey(request, env) {
 
   let emailSent = false;
   if (body.sendEmail !== false) {
-    const r = await sendLicenseEmail(email, licenseKey, planId, env.RESEND_API_KEY);
+    const r = await sendLicenseEmail(email, licenseKey, planId, env.RESEND_API_KEY, env.FROM_EMAIL);
     emailSent = r.ok;
   }
 

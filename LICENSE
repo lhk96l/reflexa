@@ -1,27 +1,62 @@
-MIT License
+REFLEXA — Proprietary Software License
+Copyright (c) 2025 Eng. Mohanad Al-Mothafer (ICT-Lead / CTO)
+All Rights Reserved.
 
-Copyright (c) 2025 Eng. Mohanad Al-Mothafer (ICT-Lead)
+================================================================
+TERMS AND CONDITIONS
+================================================================
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. OWNERSHIP
+   REFLEXA ("the Software"), including its source code, design,
+   trademarks, name, logo, and all associated materials, is the
+   exclusive property of Eng. Mohanad Al-Mothafer. The Software is
+   protected by copyright and intellectual property laws.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+2. GRANT OF USE
+   You are granted a limited, non-exclusive, non-transferable,
+   revocable license to USE the Software as a service at its
+   official hosted location (https://lhk96l.github.io/reflexa/),
+   subject to the applicable plan (Free or Pro).
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+3. RESTRICTIONS
+   Without prior written permission from the copyright holder, you
+   may NOT:
+   (a) copy, reproduce, or redistribute the Software or its source;
+   (b) modify, adapt, translate, or create derivative works;
+   (c) reverse engineer, decompile, or attempt to extract source
+       beyond what is necessary for normal browser execution;
+   (d) sell, sublicense, rent, lease, or commercially exploit the
+       Software or any part of it;
+   (e) remove or alter any copyright, trademark, or proprietary
+       notices;
+   (f) re-host, mirror, or deploy the Software under any other name
+       or domain;
+   (g) generate, forge, share, or resell license keys.
 
----
+4. PRO LICENSES
+   Pro license keys are issued per purchaser and are bound to the
+   purchaser's email. Sharing, reselling, or circumventing license
+   validation is strictly prohibited and will result in immediate
+   revocation without refund.
 
-REFLEXA - Advanced Network Diagnostic Tool
+5. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. RESULTS ARE
+   INDICATIVE AND ACTUAL NETWORK PERFORMANCE MAY VARY.
+
+6. LIMITATION OF LIABILITY
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+   OTHER LIABILITY ARISING FROM THE USE OR INABILITY TO USE THE
+   SOFTWARE.
+
+7. TERMINATION
+   This license terminates automatically upon any breach of these
+   terms. Upon termination you must cease all use of the Software.
+
+================================================================
+REFLEXA — Advanced Network Diagnostic Tool
 By: Eng. Mohanad Al-Mothafer | ICT-Lead | Chief Technology Officer
-© 2025 All Rights Reserved
+Contact: hanodeking15@gmail.com
+© 2025 All Rights Reserved.
+================================================================
