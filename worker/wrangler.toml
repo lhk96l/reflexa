@@ -1,5 +1,8 @@
 name            = "reflexa-license"
-main            = "src/index.js"
+# المصدر الحيّ المنشور هو الحزمة المدموجة (v3.4.0) — تحوي كل الميزات:
+# إبطال الاشتراك + FROM_EMAIL + Magic Link + Admin + طبقات الأمان 4-7.
+# ملاحظة: src/index.js نسخة قديمة (v3.0) ولا تُستخدم للنشر — لا توجّه main إليها.
+main            = "dist/worker.bundle.js"
 compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
 
