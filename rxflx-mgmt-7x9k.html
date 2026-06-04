@@ -72,8 +72,8 @@ select{width:100%;padding:10px 12px;background:#0B0F1E;border:1px solid rgba(255
     <div class="card-title">Generate License Key</div>
     <div class="field-row">
       <div>
-        <label>Email</label>
-        <input id="genEmail" type="email" value="hanodeking15@gmail.com" placeholder="customer@email.com">
+        <label>Customer Email</label>
+        <input id="genEmail" type="email" placeholder="customer@email.com" autocomplete="off">
       </div>
       <div>
         <label>Plan</label>
@@ -173,11 +173,50 @@ function authHeaders() {
   return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SESSION_TOKEN}` };
 }
 
+function planLabelOf(plan) {
+  return plan.includes('annual') ? 'Pro Annual' : plan.includes('enterprise') ? 'Enterprise' : 'Pro Monthly';
+}
+
+function keyExpiry(key) {
+  const ms = parseInt(key.split('-')[1], 36);
+  return new Date(ms).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// Pre-filled Gmail compose — sent manually from your own Gmail (perfect deliverability)
+function gmailComposeUrl(to, key, plan) {
+  const subject = 'Your REFLEXA Pro License Key 👑';
+  const body =
+`Hi,
+
+Thank you for purchasing REFLEXA Pro! 🎉
+
+Here is your license key:
+
+  ${key}
+
+Plan: ${planLabelOf(plan)}
+Valid until: ${keyExpiry(key)}
+
+How to activate:
+1. Open https://lhk96l.github.io/reflexa/
+2. Click "✨ Pro" in the top bar
+3. Click "🔑 Enter License Key"
+4. Paste your key and click Activate
+
+This key is linked to your email — please don't share it.
+
+Need help? Just reply to this email.
+
+— REFLEXA
+Advanced Network Diagnostic Tool`;
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 async function generateKey() {
   const email = document.getElementById('genEmail').value.trim();
   const plan  = document.getElementById('genPlan').value;
   const res   = document.getElementById('genResult');
-  if (!email) { alert('Enter email'); return; }
+  if (!email) { alert('Enter customer email'); return; }
 
   res.className = 'result show';
   res.innerHTML = '<div style="color:#64748B">Generating...</div>';
@@ -186,16 +225,18 @@ async function generateKey() {
     const r = await fetch(`${WORKER}/admin/generate-key`, {
       method:  'POST',
       headers: authHeaders(),
-      body:    JSON.stringify({ email, plan, sendEmail: true }),
+      body:    JSON.stringify({ email, plan, sendEmail: false }),
     });
     const data = await r.json();
 
     if (data.ok) {
+      const gmailUrl = gmailComposeUrl(email, data.key, plan);
       res.innerHTML = `
-        <div class="ok">Key generated!</div>
+        <div class="ok">Key generated ✓</div>
         <div class="key-val">${data.key}</div>
         <button class="copy-btn" onclick="navigator.clipboard.writeText('${data.key}');this.textContent='Copied ✓'">Copy Key</button>
-        <div class="meta">Email sent: ${data.emailSent ? 'Yes' : 'No'} · Plan: ${plan}</div>`;
+        <a class="copy-btn" style="text-decoration:none;display:inline-block;margin-left:6px" href="${gmailUrl}" target="_blank" rel="noopener">✉️ Compose in Gmail</a>
+        <div class="meta">${planLabelOf(plan)} · Valid until: ${keyExpiry(data.key)} · for ${email}</div>`;
     } else {
       if (r.status === 401) { doLogout(); return; }
       res.innerHTML = `<div class="bad">${data.reason || JSON.stringify(data)}</div>`;
