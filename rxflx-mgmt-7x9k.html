@@ -182,6 +182,10 @@ function keyExpiry(key) {
   return new Date(ms).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+// Sender Gmail account — forces compose to open from THIS account
+// (avoids the wrong account when multiple Google accounts are signed in).
+const SENDER_GMAIL = 'hanodeking15@gmail.com';
+
 // Pre-filled Gmail compose — sent manually from your own Gmail (perfect deliverability)
 function gmailComposeUrl(to, key, plan) {
   const subject = 'Your REFLEXA Pro License Key 👑';
@@ -209,7 +213,7 @@ Need help? Just reply to this email.
 
 — REFLEXA
 Advanced Network Diagnostic Tool`;
-  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `https://mail.google.com/mail/u/${encodeURIComponent(SENDER_GMAIL)}/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 async function generateKey() {
