@@ -1,8 +1,8 @@
 {
   "version": "3.0.0",
-  "builtAt": "2026-06-02T06:21:38.813Z",
-  "bundleSize": 92791,
-  "minSize": 590605,
-  "sha256": "fab6d925d23ac7ac4d8931968183af79cb99af811ca9f0417847b0a2a7c4431b",
-  "sri": "sha256-+rbZJdI6x6xNiTGWgYOvecuZr4EcqfBBeEewoqfEQxs="
+  "builtAt": "2026-06-04T08:53:30.663Z",
+  "bundleSize": 107740,
+  "minSize": 705373,
+  "sha256": "b0e1bb15d1c8dfeef630000026c46bf1be9e8bdd52feaa06e1c2b51f5b04d5f2",
+  "sri": "sha256-sOG7FdHI3+72MAAAJsRr8b6ei91S/qoG4cK1H1sE1fI="
 }

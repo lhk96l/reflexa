@@ -93,9 +93,11 @@ const obfuscationResult = JavaScriptObfuscator.obfuscate(bundledCode, {
   selfDefending: true,
 
   // ── Anti-Debugging ───────────────────────────────────────────
-  // Detects DevTools and interrupts execution
-  debugProtection: true,
-  debugProtectionInterval: 4000, // Check every 4 seconds
+  // DISABLED: uses Function(string) which needs CSP 'unsafe-eval', and freezes
+  // the page for legitimate users who open DevTools. Other layers (string
+  // encryption, control-flow flattening, self-defending) keep code unreadable.
+  debugProtection: false,
+  debugProtectionInterval: 0,
 
   // ── Misc ─────────────────────────────────────────────────────
   unicodeEscapeSequence: false,  // Avoid — too slow and detectable
