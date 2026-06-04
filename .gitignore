@@ -27,6 +27,9 @@ generate-key.ps1
 *.secret
 wrangler.local.toml
 
+# KV backups — contain customer emails & license data
+worker/backups/
+
 # Logs
 logs/
 *.log

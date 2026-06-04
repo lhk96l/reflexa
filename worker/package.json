@@ -9,6 +9,8 @@
     "dev":    "wrangler dev",
     "deploy": "wrangler deploy",
     "kv:create": "wrangler kv:namespace create LICENSES",
+    "backup": "node scripts/kv-backup.mjs",
+    "restore": "node scripts/kv-backup.mjs --restore",
     "secrets": "echo 'Run: npx wrangler secret put RXFLX_SECRET && npx wrangler secret put LS_SIGNING_SECRET && npx wrangler secret put RESEND_API_KEY'"
   },
   "devDependencies": {
