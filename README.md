@@ -2,149 +2,109 @@
 
 **Your Network's Instant Reflection**
 
-Advanced Network Diagnostic Tool with Real-time Analytics and Speed Testing
+Advanced, standards-based network diagnostic tool — RFC 6349 throughput,
+ITU-T Y.1541 classification, ITU-T G.107 (E-Model) MOS, RFC 7567 bufferbloat,
+DNS-over-HTTPS benchmarking, WebRTC leak & ISP-throttling detection — all in
+the browser.
+
+> ⚠️ **Source-Available, NOT Open-Source.** The source in this repository is
+> published for **transparency and review only**. It is **proprietary** and
+> protected by copyright. You may **read** it; you may **not** copy, modify,
+> redistribute, reuse, or commercially exploit it. See **[LICENSE](LICENSE)**.
 
 ---
 
 ## 📋 Overview
 
-REFLEXA is a professional-grade network diagnostic tool designed to provide instant insights into your internet performance. Get real-time speed testing, beautiful analytics, and comprehensive network analysis.
+REFLEXA is a professional-grade network diagnostic tool that turns raw browser
+measurements into standards-compliant verdicts. It runs entirely client-side —
+your measurement data stays on your device.
 
 ### Key Features
 
-✨ **Real-time Speed Testing** - Measure download/upload speeds instantly
-📊 **Advanced Analytics** - Beautiful visualization of network performance  
-🌙 **Dark/Light Mode** - Comfortable viewing in any lighting
-🌍 **Multi-language Support** - English & Arabic
-🔒 **100% Private** - All data stored locally, never sent to servers
-💾 **Offline Capable** - Progressive Web App (PWA) technology
-📱 **Mobile Ready** - Works perfectly on phones and tablets
-🎯 **Beautiful UI/UX** - Modern, intuitive interface
-⚡ **Fast & Lightweight** - Loads in seconds
-🔐 **Secure** - HTTPS encrypted, zero tracking
+- **RFC 6349 Throughput** — BDP, TCP Efficiency, TTR, P95/P99 latency
+- **ITU-T Y.1541 Classification** — network QoS Class 0–5
+- **ITU-T G.107 (E-Model)** — MOS voice-quality score
+- **RFC 7567 Bufferbloat** — A+ → F grading under load
+- **DNS-over-HTTPS Benchmark** — multi-resolver + DNS-leak detection
+- **WebRTC IP-Leak Detection**
+- **ISP Throttling Detection**
+- **HTTP/2 · HTTP/3 · TLS detection**
+- **Global Geo-Latency** across Cloudflare PoPs
+- **Privacy-first** — measurements stored locally (AES-256-GCM), never sold
+- **PWA / Offline-capable**, Dark/Light, English & Arabic (RTL/LTR)
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Use It
 
-### Online Demo
-Visit: https://lhk96l.github.io/reflexa/
+**Official hosted app:** https://lhk96l.github.io/reflexa/
 
-### Local Installation
-```bash
-git clone https://github.com/lhk96l/reflexa.git
-cd reflexa
-python -m http.server 8000
-# Open: http://localhost:8000
-```
+REFLEXA is offered **as a hosted service**. Use it at its official location
+under the applicable plan (Free or Pro). The repository is provided for review,
+not for self-hosting or redistribution (see LICENSE).
 
 ---
 
-## 💰 Pricing
+## 💰 Plans
 
-**Free Plan**
-- 5 speed tests per day
-- Basic analytics
-- Forever free
+| Plan | Price | Highlights |
+|---|---|---|
+| **Free** | $0 | Daily test limit · core diagnostics |
+| **Pro — Monthly** | see checkout | Unlimited tests · CSV export · 30-day history · all tools |
+| **Pro — Annual** | see checkout | Same as Pro, billed yearly |
+| **Enterprise** | Custom | API / dedicated support |
 
-**Pro Plan** - $4.99/month
-- Unlimited speed tests
-- Advanced analytics
-- Custom dashboards
-- Priority support
-
-**Enterprise** - Custom pricing
-- API access
-- On-premise option
-- Dedicated support
+Purchase: via the in-app **✨ Pro** button.
 
 ---
 
-## 📁 Project Structure
+## 🛠️ Built With
 
-```
-reflexa/
-├── index.html          # Main application
-├── manifest.json       # PWA manifest
-├── LICENSE            # MIT License
-├── README.md          # This file
-├── sw.js              # Service Worker
-├── css/               # Stylesheets
-├── js/                # JavaScript files
-└── docs/              # Documentation
-```
+HTML5 · CSS3 · JavaScript (ES6 modules) · Rollup + javascript-obfuscator ·
+PWA / Service Worker · Cloudflare Workers + KV (licensing) · Resend (email).
 
 ---
 
-## 🛠️ Technologies Used
+## 👨‍💼 Author & Copyright Holder
 
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- Progressive Web App (PWA)
-- Service Workers
-- LocalStorage API
-
----
-
-## 👨‍💼 Developer
-
-**Eng. Mohanad Al-Mothafer**
-- Position: ICT-Lead, Chief Technology Officer
-- GitHub: [@lhk96l](https://github.com/lhk96l)
-- Email: info@reflexa.io
+**Eng. Mohanad Al-Mothafer** — ICT-Lead / Chief Technology Officer
+GitHub: [@lhk96l](https://github.com/lhk96l)
 
 ---
 
 ## 📄 License
 
-Licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+**Proprietary — All Rights Reserved.** © 2025 Eng. Mohanad Al-Mothafer.
 
-Copyright © 2025 Eng. Mohanad Al-Mothafer. All rights reserved.
+This software, its source code, design, name, logo, and trademarks are the
+exclusive property of the copyright holder. Unauthorized copying, modification,
+distribution, reverse engineering, or commercial use — in whole or in part — is
+strictly prohibited. See the [LICENSE](LICENSE) file for the full terms.
+
+"REFLEXA" is a trademark of Eng. Mohanad Al-Mothafer.
 
 ---
 
-## 🤝 Contributing
+## 🔐 Security
 
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
+Found a security issue? Please report it privately — see
+[SECURITY.md](SECURITY.md). Do **not** open a public issue for vulnerabilities.
 
 ---
 
 ## 📞 Support
 
-- 📧 Email: support@reflexa.io
-- 💬 GitHub Issues: [Report a bug](https://github.com/lhk96l/reflexa/issues)
-- 🐦 Twitter: [@ReflexaApp](https://twitter.com/reflexaapp)
-
----
-
-## 🌐 Links
-
-- **Website**: https://reflexa.io
-- **GitHub**: https://github.com/lhk96l/reflexa
-- **Live Demo**: https://lhk96l.github.io/reflexa/
-
----
-
-## ⭐ Show Your Support
-
-If you find REFLEXA helpful, please:
-- ⭐ Star this repository
-- 🔄 Share with others
-- 💬 Leave feedback
-- 🐛 Report issues
+- 📧 Email: hanodeking15@gmail.com
+- 💬 GitHub Issues (bugs / questions only — **not** for code reuse requests):
+  https://github.com/lhk96l/reflexa/issues
 
 ---
 
 <div align="center">
 
-**REFLEXA - Your Network's Instant Reflection** 🌟
+**REFLEXA — Your Network's Instant Reflection** 🌟
 
-Made with ❤️ by Eng. Mohanad Al-Mothafer
-
-© 2025 REFLEXA. All rights reserved.
+© 2025 Eng. Mohanad Al-Mothafer. All Rights Reserved.
 
 </div>

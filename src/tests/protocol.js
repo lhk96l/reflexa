@@ -1,3 +1,10 @@
+/*!
+ * REFLEXA — Advanced Network Diagnostic Tool
+ * Copyright (c) 2025 Eng. Mohanad Al-Mothafer. All Rights Reserved.
+ * Proprietary & Confidential. Unauthorized copying, modification, distribution,
+ * reverse engineering, or reuse — in whole or in part — is strictly prohibited.
+ * See LICENSE. "REFLEXA" is a trademark of Eng. Mohanad Al-Mothafer.
+ */
 // REFLEXA v3.0 — Protocol & Security Analysis
 // HTTP/2, HTTP/3 (QUIC), TLS version, HSTS, IPv6
 

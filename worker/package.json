@@ -2,6 +2,8 @@
   "name": "reflexa-worker",
   "version": "3.0.0",
   "private": true,
+  "license": "UNLICENSED",
+  "author": "Eng. Mohanad Al-Mothafer",
   "type": "module",
   "scripts": {
     "dev":    "wrangler dev",

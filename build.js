@@ -104,7 +104,13 @@ const obfuscationResult = JavaScriptObfuscator.obfuscate(bundledCode, {
   splitStringsChunkLength: 8,
 });
 
-const obfuscatedCode = obfuscationResult.getObfuscatedCode();
+// Prepend a preserved copyright banner (survives minification).
+const BANNER =
+  '/*! REFLEXA — Advanced Network Diagnostic Tool\n' +
+  ' * Copyright (c) 2025 Eng. Mohanad Al-Mothafer. All Rights Reserved.\n' +
+  ' * Proprietary & Confidential. Unauthorized copying, modification, or\n' +
+  ' * reuse — in whole or in part — is strictly prohibited. See LICENSE. */\n';
+const obfuscatedCode = BANNER + obfuscationResult.getObfuscatedCode();
 const minPath = join(DIST, 'reflexa.min.js');
 writeFileSync(minPath, obfuscatedCode);
 console.log(`   ✅ Obfuscated: ${formatSize(obfuscatedCode.length)} (${ratio(bundledCode.length, obfuscatedCode.length)}x original)`);
