@@ -213,7 +213,8 @@ Need help? Just reply to this email.
 
 — REFLEXA
 Advanced Network Diagnostic Tool`;
-  return `https://mail.google.com/mail/u/${encodeURIComponent(SENDER_GMAIL)}/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  // Both the /u/<email>/ path and authuser= force Gmail to the sender account.
+  return `https://mail.google.com/mail/u/${encodeURIComponent(SENDER_GMAIL)}/?authuser=${encodeURIComponent(SENDER_GMAIL)}&view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 async function generateKey() {
