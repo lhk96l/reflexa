@@ -136,38 +136,20 @@ console.log('📄 Step 4: Generating production index.html…');
 
 let html = readFileSync(join(__dir, 'index.html'), 'utf-8');
 
-// Replace module script with obfuscated bundle
+// Swap the app <script> tag (raw module OR a prior obfuscated tag, with or
+// without ?v= and integrity) for the freshly-built obfuscated bundle + SRI.
+// CSP is intentionally NOT injected here: index.html holds the authoritative,
+// hand-maintained Content-Security-Policy (the old injected CSP was outdated
+// and omitted the license Worker + analytics, which broke the app).
+const vtag   = bundleHash.slice(0, 8);
+const before = html;
 html = html.replace(
-  /<script type="module" src="src\/app\.js"><\/script>/,
-  `<script src="dist/reflexa.min.js" integrity="${sriHash}" crossorigin="anonymous"></script>`
+  /<script(?:\s+type="module")?\s+src="(?:src\/app\.js|dist\/reflexa\.min\.js)(?:\?[^"]*)?"(?:\s+integrity="[^"]*")?(?:\s+crossorigin="[^"]*")?><\/script>/,
+  `<script src="dist/reflexa.min.js?v=${vtag}" integrity="${sriHash}"></script>`
 );
-
-// Update version comment
-html = html.replace(
-  /<!-- App Module -->/,
-  `<!-- REFLEXA v3.0 Production Build | SHA-256: ${bundleHash.slice(0, 16)} -->`
-);
-
-// Add Content-Security-Policy meta (production — stricter than dev)
-const cspContent = [
-  "default-src 'none'",
-  `script-src 'self' '${sriHash}' https://cdn.jsdelivr.net/npm/chart.js@4/`,
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src https://fonts.gstatic.com",
-  "connect-src 'self' https://speed.cloudflare.com https://1.1.1.1 https://ipapi.co https://cloudflare-dns.com https://dns.google https://dns.quad9.net https://dns.nextdns.io https://dns.adguard-dns.com https://doh.opendns.com https://ipv6.icanhazip.com https://v6.ident.me https://www.gstatic.com wss://stun.l.google.com wss://stun.cloudflare.com",
-  "img-src 'self' data: blob:",
-  "worker-src 'self' blob:",
-  "manifest-src 'self'",
-  "base-uri 'self'",
-  "form-action 'none'",
-  "frame-ancestors 'none'",
-].join('; ');
-
-// Insert CSP before </head>
-html = html.replace(
-  '</head>',
-  `  <meta http-equiv="Content-Security-Policy" content="${cspContent}">\n</head>`
-);
+if (html === before) {
+  console.warn('   ⚠️  App <script> tag not found in index.html — index.prod.html was NOT updated');
+}
 
 const prodHtmlPath = join(DIST, 'index.prod.html');
 writeFileSync(prodHtmlPath, html);
@@ -198,8 +180,9 @@ console.log(`   Output:      dist/reflexa.min.js`);
 console.log(`   HTML:        dist/index.prod.html`);
 console.log('\n✅ Build complete!\n');
 console.log('Next steps:');
-console.log('  1. Test locally: copy dist/index.prod.html → index.html and open in browser');
-console.log('  2. Deploy: npm run deploy\n');
+console.log('  1. Copy dist/index.prod.html → index.html');
+console.log('  2. TEST in a browser — obfuscation can break runtime: run a full speed test');
+console.log('  3. Deploy: npm run deploy\n');
 
 // ── Helpers ───────────────────────────────────────────────────────
 function formatSize(bytes) {
